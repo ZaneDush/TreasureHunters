@@ -25,7 +25,7 @@ import repast.simphony.util.SimUtilities;
 
 public class Explorer {
 
-	private ContinuousSpace<Object> space;
+	//private ContinuousSpace<Object> space;
 	private Grid<Object> grid;
 	//private boolean moved;
 	private int navigationMemory;
@@ -35,15 +35,15 @@ public class Explorer {
 	private boolean alone;
 	private int areaSideLength;
 	private Explorer teamMember;
-	Set<int[]> allGridPoints;
+	private Set<int[]> allGridPoints;
 	// May need to be lists of GridCell instead of GridPoint
 	private Set<int[]> workingMemory;
 	private Set<int[]> permanentMemory;
 	private GridPoint currentLocation;
-	GridPoint closestTreasurePoint;
+	private GridPoint closestTreasurePoint;
 
-	public Explorer(ContinuousSpace<Object> space, Grid<Object> grid, int navigationMemory, int perceptionRadius) {
-		this.space = space;
+	public Explorer(/*ContinuousSpace<Object> space, */Grid<Object> grid, int navigationMemory, int perceptionRadius) {
+		//this.space = space;
 		this.grid = grid;
 		this.navigationMemory = navigationMemory;
 		this.perceptionRadius = perceptionRadius;
@@ -133,19 +133,8 @@ public class Explorer {
 	}
 
 	public void move() {
-		//		If treasureFound is true then
-		//			//oldPerceptionRegion = explorerAgent.getPerceptionRegion()
-		//			//moveTowards(explorerAgent.getTreasureLocation())
-		//			//newPerceptionRegion =  explorerAgent.getPerceptionRegion()
-		//			//workingMemory = oldPerceptionRegion \ newPerceptionRegion /*\ stands for set minus*/
-		//		Else 
-		//			//oldPerceptionRegion = explorerAgent.getPerceptionRegion()
-		//			//moveTowards(random(undiscoveredLocations))
-		//			newPerceptionRegion =  explorerAgent.getPerceptionRegion()
-		//			workingMemory = oldPerceptionRegion \ newPerceptionRegion /*\ stands for set minus*/
-
+		// Initialize this.workingMemory and get the Explorer's current location's coordinates
 		this.workingMemory = getPerceptionRegion();
-
 		int explorerX = this.currentLocation.getX();
 		int explorerY = this.currentLocation.getY();
 		
@@ -153,7 +142,6 @@ public class Explorer {
 			// Move towards the treasure
 			int treasureX = this.closestTreasurePoint.getX();
 			int treasureY = this.closestTreasurePoint.getY();
-			
 			if ((explorerX - treasureX) < 0) {
 				grid.moveByVector(this, 1, Direction.EAST);
 			} else if ((explorerX - treasureX) > 0) {
@@ -166,8 +154,8 @@ public class Explorer {
 				// At treasure location, so uncover the treasure
 				this.uncoveredTreasure = true;
 			}
-
 		} else {
+			// Move towards random unknown location
 			// Set difference: allGridPoints \ workingMemory, and allGridPoints \ permanentMemory in order to find all unseen grid points
 			// this.allGridPoints holds all unknown locations
 			this.allGridPoints.removeAll(this.workingMemory);
@@ -184,11 +172,19 @@ public class Explorer {
 				grid.moveByVector(this, 1, Direction.NORTH);
 			} else if ((explorerY - y) > 0) {
 				grid.moveByVector(this, 1, Direction.SOUTH);
-			} 
+			}
 		}
 		
+		// Update this.workingMemory
 		Set<int[]> newPerceptionRegion = getPerceptionRegion();
 		this.workingMemory.removeAll(newPerceptionRegion);
+		
+		// Update this.permanentMemory to contain this.navigationMemory% of locations from this.workingMemory (Note: May need to make sure locations that are already in this.permanentMemory aren't being re-added
+		int numLocationsToAdd = (int) Math.ceil((this.navigationMemory * this.workingMemory.size()));
+		for (int i = 0; i < numLocationsToAdd; i++) {
+			int randomIndex = RandomHelper.nextIntFromTo(0, this.workingMemory.size());
+			this.permanentMemory.add((int[]) this.workingMemory.toArray()[randomIndex]);
+		}
 	}
 
 	public Set<int[]> getPerceptionRegion() {
@@ -204,6 +200,9 @@ public class Explorer {
 		return perceptionRegion;
 	}
 
+	
+	
+	
 	public void moveTowards(GridPoint pt) {
 		// only move if we are not already in this grid location
 		if (!pt.equals(grid.getLocation(this))) {
