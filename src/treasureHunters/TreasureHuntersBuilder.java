@@ -37,19 +37,27 @@ Object> {
 //				new repast.simphony.space.continuous.WrapAroundBorders(), 50,
 //				50);
 
-		Parameters params = RunEnvironment.getInstance().getParameters();
-		int areaDimensions = (Integer) params.getValue("area_dimensions");
+//		Parameters params = RunEnvironment.getInstance().getParameters();
+//		int areaDimensions = (Integer) params.getValue("area_dimensions");
+		int areaDimensions = 100;
 		GridFactory gridFactory = GridFactoryFinder.createGridFactory(null);
 		Grid<Object> grid = gridFactory.createGrid("grid", context,
 				new GridBuilderParameters<Object>(new StrictBorders(),
 						new SimpleGridAdder<Object>(), true, areaDimensions, areaDimensions)); // true so that many agents may occupy the same location at a time
 
-		int explorerCount = (Integer) params.getValue("explorer_count");
-		int navigationMemory = (Integer) params.getValue("navigation_memory");
-		int perceptionRadius = (Integer) params.getValue("perception_radius");
-		int treasureCount = (Integer) params.getValue("treasure_count");
-		int treasureValue = (Integer) params.getValue("treasure_value");
-		int treasureDecayRate = (Integer) params.getValue("treasure_decay_rate");
+//		int explorerCount = (Integer) params.getValue("explorer_count");
+//		int navigationMemory = (Integer) params.getValue("navigation_memory");
+//		int perceptionRadius = (Integer) params.getValue("perception_radius");
+//		int treasureCount = (Integer) params.getValue("treasure_count");
+//		int treasureValue = (Integer) params.getValue("treasure_value");
+//		int treasureDecayRate = (Integer) params.getValue("treasure_decay_rate");
+		int explorerCount = 100;
+		int navigationMemory = 50;
+		int perceptionRadius = 3;
+		int treasureCount = 1;
+		int treasureValue = 1000;
+		int treasureDecayRate = 10;
+		
 		// Create Explorers
 		for (int i = 0; i < explorerCount; i++) {
 			context.add(new Explorer(grid, navigationMemory, perceptionRadius, treasureCount, treasureValue, treasureDecayRate));
@@ -57,13 +65,17 @@ Object> {
 		
 		// Create treasures
 		for (int i = 0; i < treasureCount; i++) {
-			context.add(new Treasure(grid, treasureValue, treasureDecayRates));
+			context.add(new Treasure(grid, treasureValue, treasureDecayRate));
 		}
-
-//		for (Object obj : context) {
-//			NdPoint pt = space.getLocation(obj);
-//			grid.moveTo(obj, (int) pt.getX(), (int) pt.getY());
-//		}
+		
+		// Place all Explorers and treasures on the grid
+		for (Object obj : context) {
+			//NdPoint pt = space.getLocation(obj);
+			int x = RandomHelper.nextIntFromTo(0, areaDimensions - 1);
+			int y = RandomHelper.nextIntFromTo(0, areaDimensions - 1);
+			
+			grid.moveTo(obj, x, y);
+		}
 //		
 //		if (RunEnvironment.getInstance().isBatch()) {
 //			RunEnvironment.getInstance().endAt(20);
