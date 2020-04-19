@@ -230,43 +230,43 @@ public class Explorer {
 	}
 	
 	
-	public void moveTowards(GridPoint pt) {
-		// only move if we are not already in this grid location
-		if (!pt.equals(grid.getLocation(this))) {
-			NdPoint myPoint = space.getLocation(this);
-			NdPoint otherPoint = new NdPoint(pt.getX(), pt.getY());
-			double angle = SpatialMath.calcAngleFor2DMovement(space, myPoint,
-					otherPoint);
-			space.moveByVector(this, 1, angle, 0);
-			myPoint = space.getLocation(this);
-			grid.moveTo(this, (int) myPoint.getX(), (int) myPoint.getY());
-			moved = true;
-		}
-	}
-
-	public void infect() {
-		GridPoint pt = grid.getLocation(this);
-		List<Object> treasures = new ArrayList<Object>();
-		for (Object obj : grid.getObjectsAt(pt.getX(), pt.getY())) {
-			if (obj instanceof Treasure) {
-				treasures.add(obj);
-			}
-		}
-
-		if (treasures.size() > 0) {
-			int index = RandomHelper.nextIntFromTo(0, treasures.size() - 1);
-			Object obj = treasures.get(index);
-
-			NdPoint spacePt = space.getLocation(obj);
-			Context<Object> context = ContextUtils.getContext(obj);
-			context.remove(obj);
-			Zombie zombie = new Zombie(space, grid);
-			context.add(zombie);
-			space.moveTo(zombie, spacePt.getX(), spacePt.getY());
-			grid.moveTo(zombie, pt.getX(), pt.getY());
-
-			Network<Object> net = (Network<Object>)context.getProjection("infection network");
-			net.addEdge(this, zombie);
-		}
-	}
+//	public void moveTowards(GridPoint pt) {
+//		// only move if we are not already in this grid location
+//		if (!pt.equals(grid.getLocation(this))) {
+//			NdPoint myPoint = space.getLocation(this);
+//			NdPoint otherPoint = new NdPoint(pt.getX(), pt.getY());
+//			double angle = SpatialMath.calcAngleFor2DMovement(space, myPoint,
+//					otherPoint);
+//			space.moveByVector(this, 1, angle, 0);
+//			myPoint = space.getLocation(this);
+//			grid.moveTo(this, (int) myPoint.getX(), (int) myPoint.getY());
+//			moved = true;
+//		}
+//	}
+//
+//	public void infect() {
+//		GridPoint pt = grid.getLocation(this);
+//		List<Object> treasures = new ArrayList<Object>();
+//		for (Object obj : grid.getObjectsAt(pt.getX(), pt.getY())) {
+//			if (obj instanceof Treasure) {
+//				treasures.add(obj);
+//			}
+//		}
+//
+//		if (treasures.size() > 0) {
+//			int index = RandomHelper.nextIntFromTo(0, treasures.size() - 1);
+//			Object obj = treasures.get(index);
+//
+//			NdPoint spacePt = space.getLocation(obj);
+//			Context<Object> context = ContextUtils.getContext(obj);
+//			context.remove(obj);
+//			Zombie zombie = new Zombie(space, grid);
+//			context.add(zombie);
+//			space.moveTo(zombie, spacePt.getX(), spacePt.getY());
+//			grid.moveTo(zombie, pt.getX(), pt.getY());
+//
+//			Network<Object> net = (Network<Object>)context.getProjection("infection network");
+//			net.addEdge(this, zombie);
+//		}
+//	}
 }

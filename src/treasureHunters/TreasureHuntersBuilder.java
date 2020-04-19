@@ -57,7 +57,7 @@ Object> {
 		
 		// Create treasures
 		for (int i = 0; i < treasureCount; i++) {
-			context.add(new Treasure(grid, treasureValue));
+			context.add(new Treasure(grid, treasureValue, treasureDecayRates));
 		}
 
 //		for (Object obj : context) {
