@@ -47,12 +47,15 @@ Object> {
 		int explorerCount = (Integer) params.getValue("explorer_count");
 		int navigationMemory = (Integer) params.getValue("navigation_memory");
 		int perceptionRadius = (Integer) params.getValue("perception_radius");
-		for (int i = 0; i < explorerCount; i++) {
-			context.add(new Explorer(grid, navigationMemory, perceptionRadius));
-		}
-
 		int treasureCount = (Integer) params.getValue("treasure_count");
 		int treasureValue = (Integer) params.getValue("treasure_value");
+		int treasureDecayRate = (Integer) params.getValue("treasure_decay_rate");
+		// Create Explorers
+		for (int i = 0; i < explorerCount; i++) {
+			context.add(new Explorer(grid, navigationMemory, perceptionRadius, treasureCount, treasureValue, treasureDecayRate));
+		}
+		
+		// Create treasures
 		for (int i = 0; i < treasureCount; i++) {
 			context.add(new Treasure(grid, treasureValue));
 		}

@@ -35,36 +35,45 @@ public class Explorer {
 	private boolean alone;
 	private int areaSideLength;
 	private Explorer teamMember;
-	private Set<int[]> allGridPoints;
+	private Set<int[]> unknownGridPoints;
 	// May need to be lists of GridCell instead of GridPoint
 	private Set<int[]> workingMemory;
 	private Set<int[]> permanentMemory;
 	private GridPoint currentLocation;
 	private GridPoint closestTreasurePoint;
+	private int currentTimeStep;
+	private int treasureCount;
+	private int treasureValue;
+	private int treasureDecayRate;
 
-	public Explorer(/*ContinuousSpace<Object> space, */Grid<Object> grid, int navigationMemory, int perceptionRadius) {
+	public Explorer(/*ContinuousSpace<Object> space, */Grid<Object> grid, int navigationMemory, int perceptionRadius, int treasureCount, int treasureValue, int treasureDecayRate) {
 		//this.space = space;
 		this.grid = grid;
 		this.navigationMemory = navigationMemory;
 		this.perceptionRadius = perceptionRadius;
+		this.treasureCount = treasureCount;
+		this.treasureValue = treasureValue;
+		this.treasureDecayRate = treasureDecayRate;
 		this.uncoveredTreasure = false;
 		this.treasureFound = false;
 		this.alone = true;
 		this.areaSideLength = this.grid.getDimensions().getWidth();
 		// Create a set filled with all x,y coordinate pairs in the grid
-		this.allGridPoints = new HashSet<int[]>();
+		this.unknownGridPoints = new HashSet<int[]>();
 		int[] point = new int[2];
 		for (int i = 0; i < this.grid.getDimensions().getHeight(); i++) {
 			for (int j = 0; j < this.grid.getDimensions().getWidth(); j++) {
 				point[0] = i;
 				point[1] = j;
-				this.allGridPoints.add(point);
+				this.unknownGridPoints.add(point);
 			}
 		}
 	}
 
 	@ScheduledMethod(start = 1, interval = 1)
 	public void exploring() { //step()
+		// Keep track of how much time has passed
+		this.currentTimeStep++;
 		// See if this Explorer has uncovered a treasure
 		if (this.uncoveredTreasure == false) {
 			// Get the current grid location of this Explorer
@@ -158,9 +167,9 @@ public class Explorer {
 			// Move towards random unknown location
 			// Set difference: allGridPoints \ workingMemory, and allGridPoints \ permanentMemory in order to find all unseen grid points
 			// this.allGridPoints holds all unknown locations
-			this.allGridPoints.removeAll(this.workingMemory);
-			this.allGridPoints.removeAll(this.permanentMemory);
-			int[][] allGridPointsArray = (int[][]) this.allGridPoints.toArray();
+			this.unknownGridPoints.removeAll(this.workingMemory);
+			this.unknownGridPoints.removeAll(this.permanentMemory);
+			int[][] allGridPointsArray = (int[][]) this.unknownGridPoints.toArray();
 			int randomIndex = RandomHelper.nextIntFromTo(0, allGridPointsArray.length);
 			int x = allGridPointsArray[randomIndex][0];
 			int y = allGridPointsArray[randomIndex][1];
@@ -221,7 +230,23 @@ public class Explorer {
 //		Else 
 //			return false
 
-		double currentSpeed = this.getSearchedArea() /
+		double aloneSpeed = getSearchedAreaSize() / this.currentTimeStep;
+		int teamSearchedArea = nearestExplorer.getSearchedAreaSize() + getSearchedAreaSize();
+		double teamSpeed = teamSearchedArea / this.currentTimeStep;
+		double timeToDiscoverTreasureAlone = (this.unknownGridPoints.size() / aloneSpeed) / this.treasureCount;
+		double timeToDiscoverTreasureTeam = (this.unknownGridPoints.size() / teamSpeed) / this.treasureCount;
+		double treasureValueAlone = timeToDiscoverTreasureAlone * this.treasureDecayRate;
+		double treasureValueTeam = (timeToDiscoverTreasureTeam * this.treasureDecayRate) / 2;
+		// If Explorer receives less when alone as compared to team, then team up
+		if (treasureValueAlone < treasureValueTeam) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+	
+	public int getSearchedAreaSize() {
+		return this.permanentMemory.size() + getPerceptionRegion().size();
 	}
 	
 	
