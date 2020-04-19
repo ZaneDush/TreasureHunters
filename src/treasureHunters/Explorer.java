@@ -1,16 +1,19 @@
 package treasureHunters;
 
-import java.util.ArrayList;
-import java.util.List;
 
-import jzombies.Human;
-import jzombies.Zombie;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 import treasureHunters.Treasure;
 import repast.simphony.context.Context;
 import repast.simphony.engine.schedule.ScheduledMethod;
 import repast.simphony.query.space.grid.GridCell;
 import repast.simphony.query.space.grid.GridCellNgh;
+import repast.simphony.query.space.grid.MooreQuery;
 import repast.simphony.random.RandomHelper;
+import repast.simphony.space.Direction;
 import repast.simphony.space.SpatialMath;
 import repast.simphony.space.continuous.ContinuousSpace;
 import repast.simphony.space.continuous.NdPoint;
@@ -32,6 +35,12 @@ public class Explorer {
 	private boolean alone;
 	private int areaSideLength;
 	private Explorer teamMember;
+	Set<int[]> allGridPoints;
+	// May need to be lists of GridCell instead of GridPoint
+	private Set<int[]> workingMemory;
+	private Set<int[]> permanentMemory;
+	private GridPoint currentLocation;
+	GridPoint closestTreasurePoint;
 
 	public Explorer(ContinuousSpace<Object> space, Grid<Object> grid, int navigationMemory, int perceptionRadius) {
 		this.space = space;
@@ -41,6 +50,17 @@ public class Explorer {
 		this.uncoveredTreasure = false;
 		this.treasureFound = false;
 		this.alone = true;
+		this.areaSideLength = this.grid.getDimensions().getWidth();
+		// Create a set filled with all x,y coordinate pairs in the grid
+		this.allGridPoints = new HashSet<int[]>();
+		int[] point = new int[2];
+		for (int i = 0; i < this.grid.getDimensions().getHeight(); i++) {
+			for (int j = 0; j < this.grid.getDimensions().getWidth(); j++) {
+				point[0] = i;
+				point[1] = j;
+				this.allGridPoints.add(point);
+			}
+		}
 	}
 
 	@ScheduledMethod(start = 1, interval = 1)
@@ -48,10 +68,10 @@ public class Explorer {
 		// See if this Explorer has uncovered a treasure
 		if (this.uncoveredTreasure == false) {
 			// Get the current grid location of this Explorer
-			GridPoint pt = grid.getLocation(this);
+			this.currentLocation = grid.getLocation(this);
 
 			// Use the GridCellNgh class to create GridCells in order to find any treasures within the perceptionRadius
-			GridCellNgh<Treasure> nghCreator = new GridCellNgh<Treasure>(grid, pt,
+			GridCellNgh<Treasure> nghCreator = new GridCellNgh<Treasure>(grid, currentLocation,
 					Treasure.class, this.perceptionRadius, this.perceptionRadius);
 			List<GridCell<Treasure>> gridCells = nghCreator.getNeighborhood(true);
 			// > 1 because Explorer agent is included in gridCells due to (true) parameter being passed above
@@ -62,13 +82,12 @@ public class Explorer {
 			double minDistance;
 			if (this.treasureFound) {
 				// Find the closest treasure to the Explorer
-				GridPoint closestTreasurePoint = null;
 				minDistance = Double.MAX_VALUE;
 				double distance = 0;
 				for (GridCell<Treasure> cell : gridCells) {
-					distance = grid.getDistance(pt, cell.getPoint());
+					distance = grid.getDistance(this.currentLocation, cell.getPoint());
 					if (distance < minDistance) {
-						closestTreasurePoint = cell.getPoint();
+						this.closestTreasurePoint = cell.getPoint();
 						minDistance = distance;
 					}
 				}
@@ -80,7 +99,7 @@ public class Explorer {
 				}
 			} else { // Else Explorer has not found a treasure
 				// Find the nearest Explorer to this Explorer
-				GridCellNgh<Explorer> nghExplorers = new GridCellNgh<Explorer>(grid, pt,
+				GridCellNgh<Explorer> nghExplorers = new GridCellNgh<Explorer>(grid, currentLocation,
 						Explorer.class, this.areaSideLength, this.areaSideLength);
 				List<GridCell<Explorer>> explorerGridCells = nghExplorers.getNeighborhood(true);
 				//double minDistance;
@@ -88,7 +107,7 @@ public class Explorer {
 				minDistance = Double.MAX_VALUE;
 				double distance = 0;
 				for (GridCell<Explorer> cell : explorerGridCells) {
-					distance = grid.getDistance(pt, cell.getPoint());
+					distance = grid.getDistance(currentLocation, cell.getPoint());
 					if (distance < minDistance) {
 						nearestExplorer = cell.items().iterator().next();
 						minDistance = distance;
@@ -111,6 +130,78 @@ public class Explorer {
 			//moveTowards(pointWithMostHumans);
 			//infect();
 		}
+	}
+
+	public void move() {
+		//		If treasureFound is true then
+		//			//oldPerceptionRegion = explorerAgent.getPerceptionRegion()
+		//			//moveTowards(explorerAgent.getTreasureLocation())
+		//			//newPerceptionRegion =  explorerAgent.getPerceptionRegion()
+		//			//workingMemory = oldPerceptionRegion \ newPerceptionRegion /*\ stands for set minus*/
+		//		Else 
+		//			//oldPerceptionRegion = explorerAgent.getPerceptionRegion()
+		//			//moveTowards(random(undiscoveredLocations))
+		//			newPerceptionRegion =  explorerAgent.getPerceptionRegion()
+		//			workingMemory = oldPerceptionRegion \ newPerceptionRegion /*\ stands for set minus*/
+
+		this.workingMemory = getPerceptionRegion();
+
+		int explorerX = this.currentLocation.getX();
+		int explorerY = this.currentLocation.getY();
+		
+		if (this.treasureFound) {
+			// Move towards the treasure
+			int treasureX = this.closestTreasurePoint.getX();
+			int treasureY = this.closestTreasurePoint.getY();
+			
+			if ((explorerX - treasureX) < 0) {
+				grid.moveByVector(this, 1, Direction.EAST);
+			} else if ((explorerX - treasureX) > 0) {
+				grid.moveByVector(this, 1, Direction.WEST);
+			} else if ((explorerY - treasureY) < 0) {
+				grid.moveByVector(this, 1, Direction.NORTH);
+			} else if ((explorerY - treasureY) > 0) {
+				grid.moveByVector(this, 1, Direction.SOUTH);
+			} else {
+				// At treasure location, so uncover the treasure
+				this.uncoveredTreasure = true;
+			}
+
+		} else {
+			// Set difference: allGridPoints \ workingMemory, and allGridPoints \ permanentMemory in order to find all unseen grid points
+			// this.allGridPoints holds all unknown locations
+			this.allGridPoints.removeAll(this.workingMemory);
+			this.allGridPoints.removeAll(this.permanentMemory);
+			int[][] allGridPointsArray = (int[][]) this.allGridPoints.toArray();
+			int randomIndex = RandomHelper.nextIntFromTo(0, allGridPointsArray.length);
+			int x = allGridPointsArray[randomIndex][0];
+			int y = allGridPointsArray[randomIndex][1];
+			if ((explorerX - x) < 0) {
+				grid.moveByVector(this, 1, Direction.EAST);
+			} else if ((explorerX - x) > 0) {
+				grid.moveByVector(this, 1, Direction.WEST);
+			} else if ((explorerY - y) < 0) {
+				grid.moveByVector(this, 1, Direction.NORTH);
+			} else if ((explorerY - y) > 0) {
+				grid.moveByVector(this, 1, Direction.SOUTH);
+			} 
+		}
+		
+		Set<int[]> newPerceptionRegion = getPerceptionRegion();
+		this.workingMemory.removeAll(newPerceptionRegion);
+	}
+
+	public Set<int[]> getPerceptionRegion() {
+		Set<int[]> perceptionRegion = new HashSet<int[]>();
+		int[] point = new int[2];
+		MooreQuery mooreNeighborhood = new MooreQuery(this.grid, this, this.perceptionRadius);
+		for (Object obj : mooreNeighborhood.query()) {
+			GridCell gc = (GridCell) obj;
+			point[0] = gc.getPoint().getX();
+			point[1] = gc.getPoint().getY();
+			perceptionRegion.add(point);	
+		}
+		return perceptionRegion;
 	}
 
 	public void moveTowards(GridPoint pt) {
