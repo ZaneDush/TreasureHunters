@@ -200,7 +200,29 @@ public class Explorer {
 		return perceptionRegion;
 	}
 
-	
+	public boolean teamUp(Explorer nearestExplorer) {
+//		unknownArea = totalArea - explorerAgent.getSearchedArea()
+//		currentSpeed = explorerAgent.getSearchedArea() / timeTaken	/*Get speed at 
+//			which new
+//			areas have
+//			been
+//			searched*/
+//		prospectiveSearchedArea = nearestExplorerAgent.getSearchedArea() + explorerAgent.getSearchedArea() 
+//		potentialSpeed = prospectiveSearchedArea / timeTaken 	/*Get speed at which 
+//																new areas can be searched with new search area*/
+//		timeToDiscoverTreasureCurrent = (unknownArea / currentSpeed) / numTreasures
+//		timeToDiscoverTreasurePotential = (unknownArea / potentialSpeed) / numTreasures
+//		treasureValueWithCurrent = timeToDiscoverTreasureCurrent * treasureDecayRate
+//		treasureValueWithTeam = timeToDiscoverTreasurePotential * treasureDecayRate
+//		individualPayoutCurrent = treasureValueWithCurrent / numTeamMembers
+//		individualPayoutPotential = treasureValueWithTeam / numTeamMembers + 1
+//		If individualPayoutCurrent < individualPayoutPotential then
+//		     return true
+//		Else 
+//			return false
+
+		double currentSpeed = this.getSearchedArea() /
+	}
 	
 	
 	public void moveTowards(GridPoint pt) {
