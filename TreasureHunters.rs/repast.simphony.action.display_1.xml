@@ -1,5 +1,5 @@
 <repast.simphony.visualization.engine.CartesianDisplayDescriptor simphonyVersion="2.7.0">
-  <name>Grid Display</name>
+  <name>Space Display</name>
   <type>2D</type>
   <styles>
     <entry>
@@ -14,11 +14,11 @@
   <editedStyles>
     <entry>
       <string>treasureHunters.Treasure</string>
-      <string>treasureHunters.Treasure.style_0.xml</string>
+      <string>treasureHunters.Treasure.style_1.xml</string>
     </entry>
     <entry>
       <string>treasureHunters.Explorer</string>
-      <string>treasureHunters.Explorer.style_0.xml</string>
+      <string>treasureHunters.Explorer.style_2.xml</string>
     </entry>
   </editedStyles>
   <netStyles/>
@@ -31,10 +31,10 @@
     <pType>LAST</pType>
     <duration>-1.0</duration>
     <frequency>REPEAT</frequency>
-    <hashCode>-2112350900</hashCode>
+    <hashCode>-2048041848</hashCode>
   </schedParams>
   <layoutClassName>foo.bar.baz</layoutClassName>
-  <layoutProjection>grid</layoutProjection>
+  <layoutProjection>space</layoutProjection>
   <layoutInterval>0</layoutInterval>
   <layerOrder>
     <entry>
@@ -48,9 +48,9 @@
   </layerOrder>
   <projections>
     <repast.simphony.scenario.data.ProjectionData>
-      <id>grid</id>
+      <id>space</id>
       <attributes/>
-      <type>grid</type>
+      <type>continuous space</type>
     </repast.simphony.scenario.data.ProjectionData>
   </projections>
   <visualizationProperties class="repast.simphony.visualization.UnitSizeLayoutProperties">
@@ -58,12 +58,12 @@
   </visualizationProperties>
   <projectionDescriptors>
     <entry>
-      <string>grid</string>
-      <repast.simphony.visualization.grid.GridProjectionDescriptor>
+      <string>space</string>
+      <repast.simphony.visualization.continuous.ContinuousProjectionDescriptor>
         <proj reference="../../../../projections/repast.simphony.scenario.data.ProjectionData"/>
         <props>
           <entry>
-            <string>repast.simphony.visualization.grid.GridDecorator</string>
+            <string>repast.simphony.visualization.continuous.ContinuousDecorator</string>
             <map>
               <entry>
                 <string>COLOR</string>
@@ -80,7 +80,7 @@
             </map>
           </entry>
         </props>
-      </repast.simphony.visualization.grid.GridProjectionDescriptor>
+      </repast.simphony.visualization.continuous.ContinuousProjectionDescriptor>
     </entry>
   </projectionDescriptors>
   <props/>

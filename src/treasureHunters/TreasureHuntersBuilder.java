@@ -30,16 +30,17 @@ Object> {
 //				"infection network", context, true);
 //		netBuilder.buildNetwork();
 
-//		ContinuousSpaceFactory spaceFactory = ContinuousSpaceFactoryFinder
-//				.createContinuousSpaceFactory(null);
-//		ContinuousSpace<Object> space = spaceFactory.createContinuousSpace(
-//				"space", context, new RandomCartesianAdder<Object>(),
-//				new repast.simphony.space.continuous.WrapAroundBorders(), 50,
-//				50);
+		int areaDimensions = 75;
+		
+		ContinuousSpaceFactory spaceFactory = ContinuousSpaceFactoryFinder
+				.createContinuousSpaceFactory(null);
+		ContinuousSpace<Object> space = spaceFactory.createContinuousSpace(
+				"space", context, new RandomCartesianAdder<Object>(),
+				new repast.simphony.space.continuous.WrapAroundBorders(), areaDimensions,
+				areaDimensions);
 
 //		Parameters params = RunEnvironment.getInstance().getParameters();
 //		int areaDimensions = (Integer) params.getValue("area_dimensions");
-		int areaDimensions = 100;
 		GridFactory gridFactory = GridFactoryFinder.createGridFactory(null);
 		Grid<Object> grid = gridFactory.createGrid("grid", context,
 				new GridBuilderParameters<Object>(new WrapAroundBorders(),
@@ -52,29 +53,28 @@ Object> {
 //		int treasureValue = (Integer) params.getValue("treasure_value");
 //		int treasureDecayRate = (Integer) params.getValue("treasure_decay_rate");
 		int explorerCount = 100;
-		int navigationMemory = 50;
-		int perceptionRadius = 3;
-		int treasureCount = 10;
+		int navigationMemory = 70;
+		int perceptionRadius = 5;
+		int treasureCount = 3;
 		int treasureValue = 1000;
 		int treasureDecayRate = 10;
 		
 		// Create Explorers
 		for (int i = 0; i < explorerCount; i++) {
-			context.add(new Explorer(grid, navigationMemory, perceptionRadius, treasureCount, treasureValue, treasureDecayRate));
+			context.add(new Explorer(space, grid, navigationMemory, perceptionRadius, treasureCount, treasureValue, treasureDecayRate));
 		}
 		
 		// Create treasures
 		for (int i = 0; i < treasureCount; i++) {
-			context.add(new Treasure(grid, treasureValue, treasureDecayRate));
+			context.add(new Treasure(space, grid, treasureValue, treasureDecayRate));
 		}
 		
 		// Place all Explorers and treasures on the grid
 		for (Object obj : context) {
-			//NdPoint pt = space.getLocation(obj);
-			int x = RandomHelper.nextIntFromTo(0, areaDimensions - 1);
-			int y = RandomHelper.nextIntFromTo(0, areaDimensions - 1);
-			
-			grid.moveTo(obj, x, y);
+			NdPoint pt = space.getLocation(obj);
+//			int x = RandomHelper.nextIntFromTo(0, areaDimensions - 1);
+//			int y = RandomHelper.nextIntFromTo(0, areaDimensions - 1);
+			grid.moveTo(obj, (int) pt.getX(), (int) pt.getY());
 		}
 //		
 //		if (RunEnvironment.getInstance().isBatch()) {
