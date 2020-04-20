@@ -240,14 +240,24 @@ public class Explorer {
 		return perceptionRegion;
 	}
 
-	public boolean teamUp(Explorer thisExplorer, Explorer nearestExplorer) {
-		double aloneSpeed = thisExplorer.getSearchedAreaSize() / thisExplorer.currentTimeStep;
+	public boolean teamUp(Explorer thisExplorer, Explorer nearestExplorer) {		
+		double aloneSpeed = (double) thisExplorer.getSearchedAreaSize() / thisExplorer.currentTimeStep;
 		int teamSearchedArea = nearestExplorer.getSearchedAreaSize() + thisExplorer.getSearchedAreaSize();
-		double teamSpeed = teamSearchedArea / thisExplorer.currentTimeStep;
+		double teamSpeed = (double) teamSearchedArea / thisExplorer.currentTimeStep;
+		//System.out.println(aloneSpeed + " " + teamSpeed);
 		double timeToDiscoverTreasureAlone = (thisExplorer.unknownGridPoints.size() / aloneSpeed) / thisExplorer.treasureCount;
 		double timeToDiscoverTreasureTeam = (thisExplorer.unknownGridPoints.size() / teamSpeed) / thisExplorer.treasureCount;
-		double treasureValueAlone = timeToDiscoverTreasureAlone * thisExplorer.treasureDecayRate;
-		double treasureValueTeam = (timeToDiscoverTreasureTeam * thisExplorer.treasureDecayRate) / 2;
+		//System.out.println(timeToDiscoverTreasureAlone + " vs " + timeToDiscoverTreasureTeam);
+		double treasureValueAlone = this.treasureValue;
+		double treasureValueTeam = this.treasureValue;
+		for (int i = 0; i < timeToDiscoverTreasureAlone; i++) {
+			treasureValueAlone = treasureValueAlone - (treasureValueAlone * thisExplorer.treasureDecayRate);
+		}
+		for (int i = 0; i < timeToDiscoverTreasureTeam; i++) {
+			treasureValueTeam = treasureValueTeam - (treasureValueTeam * thisExplorer.treasureDecayRate);
+		}
+		treasureValueTeam = treasureValueTeam / 2;
+		
 		// If thisExplorer receives less when alone as compared to team, then want to team up
 		System.out.println(treasureValueAlone + " vs " + treasureValueTeam);
 		if (treasureValueAlone < treasureValueTeam) {

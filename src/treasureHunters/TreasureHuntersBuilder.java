@@ -29,7 +29,7 @@ Object> {
 	public Context build(Context<Object> context) {
 		context.setId("TreasureHunters");
 		NetworkBuilder<Object> netBuilder = new NetworkBuilder<Object>(
-				"team network", context, true);
+				"team network", context, false);
 		netBuilder.buildNetwork();
 		Parameters params = RunEnvironment.getInstance().getParameters();
 		int areaDimensions = (Integer) params.getValue("area_dimensions");
