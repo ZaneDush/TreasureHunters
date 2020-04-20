@@ -25,9 +25,7 @@ import repast.simphony.util.SimUtilities;
 
 public class Explorer {
 
-	//private ContinuousSpace<Object> space;
 	private Grid<Object> grid;
-	//private boolean moved;
 	private double navigationMemory;
 	private int perceptionRadius;
 	private boolean uncoveredTreasure;
@@ -37,7 +35,6 @@ public class Explorer {
 	private Explorer teamMember;
 	// unknownGridPoints holds all unknown locations
 	private Set<List<Integer>> unknownGridPoints;
-	// May need to be lists of GridCell instead of GridPoint
 	private Set<List<Integer>> workingMemory;
 	private Set<List<Integer>> permanentMemory = new HashSet<List<Integer>>();
 	private GridPoint currentLocation;
