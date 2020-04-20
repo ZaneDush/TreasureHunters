@@ -72,17 +72,15 @@ public class Explorer {
 	}
 
 	@ScheduledMethod(start = 1, interval = 1)
-	public void exploring() { //step()
+	public void exploring() {
 		// See if this Explorer has uncovered a treasure
 		if (this.uncoveredTreasure == false) {
 			// Get the current grid location of this Explorer
 			this.currentLocation = grid.getLocation(this);
-
 			// Use the GridCellNgh class to create GridCells in order to find any treasures within the perceptionRadius
 			GridCellNgh<Treasure> nghCreator = new GridCellNgh<Treasure>(this.grid, this.currentLocation,
 					Treasure.class, this.perceptionRadius, this.perceptionRadius);
 			List<GridCell<Treasure>> gridCells = nghCreator.getNeighborhood(false);
-			// > 1 because Explorer agent is included in gridCells due to (true) parameter being passed above
 			for (GridCell<Treasure> gc : gridCells) {
 				if (gc.size() > 0) {
 					this.treasureFound = true;
@@ -105,19 +103,16 @@ public class Explorer {
 				}
 				// If Explorer is on the treasure
 				if (minDistance == 0) {
-					System.out.println(gridCells.size());
 					this.uncoveredTreasure = true;
-				} else { // Else Explorer is not on the treasure
-					//System.out.println("MADE IT");
+				} else {
 					move();
 				}
-			} else { // Else Explorer has not found a treasure
+			} else {
 				if (this.currentTimeStep != 0) {
 					// Find the nearest Explorer to this Explorer
 					GridCellNgh<Explorer> nghExplorers = new GridCellNgh<Explorer>(grid, currentLocation,
 							Explorer.class, this.areaSideLength, this.areaSideLength);
 					List<GridCell<Explorer>> explorerGridCells = nghExplorers.getNeighborhood(true);
-					//double minDistance;
 					Explorer nearestExplorer = null;
 					minDistance = Double.MAX_VALUE;
 					double distance = 0;
@@ -135,7 +130,6 @@ public class Explorer {
 					if (this.alone && nearestExplorer.alone) {
 						// If both Explorer agents decide to not team up
 						if (!teamUp(this, nearestExplorer) && !teamUp(nearestExplorer, this)) {
-							//System.out.println("MADE IT");
 							move();
 						} else {
 							this.alone = false;
@@ -146,23 +140,17 @@ public class Explorer {
 							Network<Object> net = (Network < Object>) context.getProjection("team network");
 							net.addEdge(this, this.teamMember);
 						}
-					} else { // Else at least one of the Explorer agents is not alone
-						//System.out.println("MADE IT");
+					} else {
 						move();
 					}
 				} else {
 					move();
 				}
 			}
-
 			// Keep track of how much time has passed
 			this.currentTimeStep++;
-			
 			// treasureValue decays over time
 			this.treasureValue = this.treasureValue - (this.treasureValue * treasureDecayRate);
-			
-			//moveTowards(pointWithMostHumans);
-			//infect();
 		}
 	}
 
@@ -171,7 +159,6 @@ public class Explorer {
 		this.workingMemory = getPerceptionRegion();
 		int explorerX = this.currentLocation.getX();
 		int explorerY = this.currentLocation.getY();
-
 		if (this.treasureFound) {
 			// Move towards the treasure
 			int treasureX = this.closestTreasurePoint.getX();
@@ -190,7 +177,7 @@ public class Explorer {
 			}
 		} else {
 			// Move towards random unknown location
-			// Set difference: allGridPoints \ workingMemory, and allGridPoints \ permanentMemory in order to find all unseen grid points
+			// Set difference: unknownnGridPoints \ workingMemory, and unknownGridPoints \ permanentMemory in order to find all unseen grid points
 			this.unknownGridPoints.removeAll(this.workingMemory);
 			this.unknownGridPoints.removeAll(this.permanentMemory);
 			List<List<Integer>> setToList = new ArrayList<List<Integer>>(this.unknownGridPoints);
@@ -199,7 +186,6 @@ public class Explorer {
 				this.randomLocation = setToList.get(randomIndex);
 			} else if (!this.unknownGridPoints.contains(this.randomLocation)) {
 				int randomIndex = RandomHelper.nextIntFromTo(0, setToList.size() - 1);
-				//System.out.println(this.unknownGridPoints.size() + " " + setToList.size());
 				this.randomLocation = setToList.get(randomIndex);
 			}
 			int x = this.randomLocation.get(0);
@@ -219,11 +205,9 @@ public class Explorer {
 				}
 			}
 		}
-
 		// Update this.workingMemory
 		Set<List<Integer>> newPerceptionRegion = getPerceptionRegion();
 		this.workingMemory.removeAll(newPerceptionRegion);
-
 		// Update this.permanentMemory to contain this.navigationMemory% of locations from this.workingMemory (Note: May need to make sure locations that are already in this.permanentMemory aren't being re-added
 		int numLocationsToAdd = (int) Math.ceil((this.navigationMemory * this.workingMemory.size()));
 		List<List<Integer>> setToList = new ArrayList<List<Integer>>(this.workingMemory);
@@ -279,45 +263,4 @@ public class Explorer {
 	public int getSearchedAreaSize() {
 		return this.permanentMemory.size() + getPerceptionRegion().size();
 	}
-
-
-	//	public void moveTowards(GridPoint pt) {
-	//		// only move if we are not already in this grid location
-	//		if (!pt.equals(grid.getLocation(this))) {
-	//			NdPoint myPoint = space.getLocation(this);
-	//			NdPoint otherPoint = new NdPoint(pt.getX(), pt.getY());
-	//			double angle = SpatialMath.calcAngleFor2DMovement(space, myPoint,
-	//					otherPoint);
-	//			space.moveByVector(this, 1, angle, 0);
-	//			myPoint = space.getLocation(this);
-	//			grid.moveTo(this, (int) myPoint.getX(), (int) myPoint.getY());
-	//			moved = true;
-	//		}
-	//	}
-	//
-	//	public void infect() {
-	//		GridPoint pt = grid.getLocation(this);
-	//		List<Object> treasures = new ArrayList<Object>();
-	//		for (Object obj : grid.getObjectsAt(pt.getX(), pt.getY())) {
-	//			if (obj instanceof Treasure) {
-	//				treasures.add(obj);
-	//			}
-	//		}
-	//
-	//		if (treasures.size() > 0) {
-	//			int index = RandomHelper.nextIntFromTo(0, treasures.size() - 1);
-	//			Object obj = treasures.get(index);
-	//
-	//			NdPoint spacePt = space.getLocation(obj);
-	//			Context<Object> context = ContextUtils.getContext(obj);
-	//			context.remove(obj);
-	//			Zombie zombie = new Zombie(space, grid);
-	//			context.add(zombie);
-	//			space.moveTo(zombie, spacePt.getX(), spacePt.getY());
-	//			grid.moveTo(zombie, pt.getX(), pt.getY());
-	//
-	//			Network<Object> net = (Network<Object>)context.getProjection("infection network");
-	//			net.addEdge(this, zombie);
-	//		}
-	//	}
 }

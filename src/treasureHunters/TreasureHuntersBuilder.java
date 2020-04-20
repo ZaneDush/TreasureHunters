@@ -28,22 +28,9 @@ Object> {
 	@Override
 	public Context build(Context<Object> context) {
 		context.setId("TreasureHunters");
-
-		//		NetworkBuilder<Object> netBuilder = new NetworkBuilder<Object>(
-		//				"infection network", context, true);
-		//		netBuilder.buildNetwork();
-
-		//		ContinuousSpaceFactory spaceFactory = ContinuousSpaceFactoryFinder
-		//				.createContinuousSpaceFactory(null);
-		//		ContinuousSpace<Object> space = spaceFactory.createContinuousSpace(
-		//				"space", context, new RandomCartesianAdder<Object>(),
-		//				new repast.simphony.space.continuous.WrapAroundBorders(), 50,
-		//				50);
-
 		NetworkBuilder<Object> netBuilder = new NetworkBuilder<Object>(
 				"team network", context, true);
 		netBuilder.buildNetwork();
-
 		//		Parameters params = RunEnvironment.getInstance().getParameters();
 		//		int areaDimensions = (Integer) params.getValue("area_dimensions");
 		int areaDimensions = 100;
@@ -51,7 +38,6 @@ Object> {
 		Grid<Object> grid = gridFactory.createGrid("grid", context,
 				new GridBuilderParameters<Object>(new WrapAroundBorders(),
 						new SimpleGridAdder<Object>(), true, areaDimensions, areaDimensions)); // true so that many agents may occupy the same location at a time
-
 		//		int explorerCount = (Integer) params.getValue("explorer_count");
 		//		double navigationMemory = (Double) params.getValue("navigation_memory");
 		//		int perceptionRadius = (Integer) params.getValue("perception_radius");
@@ -65,17 +51,14 @@ Object> {
 		int treasureCount = 10;
 		double treasureValue = 1000;
 		double treasureDecayRate = .10;
-		
 		// Create Explorers
 		for (int i = 0; i < explorerCount; i++) {
 			context.add(new Explorer(grid, navigationMemory, perceptionRadius, treasureCount, treasureValue, treasureDecayRate));
 		}
-
 		// Create treasures
 		for (int i = 0; i < treasureCount; i++) {
 			context.add(new Treasure(grid, treasureValue, treasureDecayRate));
 		}
-
 		// Place all Explorers and treasures on the grid
 		for (Object obj : context) {
 			//NdPoint pt = space.getLocation(obj);
