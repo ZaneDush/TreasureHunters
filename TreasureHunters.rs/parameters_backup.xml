@@ -19,7 +19,7 @@
 									
 		/>
 				<parameter name="area_dimensions" displayName="Square Area Dimensions" type="int" 
-						defaultValue="50" 
+						defaultValue="100" 
 						isReadOnly="false" 
 						converter="repast.simphony.parameter.StringConverterFactory$IntConverter"
 									
