@@ -42,7 +42,7 @@ Object> {
 		int areaDimensions = 100;
 		GridFactory gridFactory = GridFactoryFinder.createGridFactory(null);
 		Grid<Object> grid = gridFactory.createGrid("grid", context,
-				new GridBuilderParameters<Object>(new StrictBorders(),
+				new GridBuilderParameters<Object>(new WrapAroundBorders(),
 						new SimpleGridAdder<Object>(), true, areaDimensions, areaDimensions)); // true so that many agents may occupy the same location at a time
 
 //		int explorerCount = (Integer) params.getValue("explorer_count");
@@ -54,7 +54,7 @@ Object> {
 		int explorerCount = 100;
 		int navigationMemory = 50;
 		int perceptionRadius = 3;
-		int treasureCount = 1;
+		int treasureCount = 10;
 		int treasureValue = 1000;
 		int treasureDecayRate = 10;
 		
