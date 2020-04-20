@@ -60,11 +60,9 @@ public class Explorer {
 		this.areaSideLength = this.grid.getDimensions().getWidth();
 		// Create a set filled with all x,y coordinate pairs in the grid
 		this.unknownGridPoints = new HashSet<List<Integer>>();
-		List<Integer> point = new ArrayList<Integer>(2);
-		for (int i = 0; i < this.grid.getDimensions().getHeight(); i++) {
-			for (int j = 0; j < this.grid.getDimensions().getWidth(); j++) {
-//				point.set(0, i);
-//				point.set(1, j);
+		for (int i = 0; i < this.areaSideLength; i++) {
+			for (int j = 0; j < this.areaSideLength; j++) {
+				List<Integer> point = new ArrayList<Integer>(2);
 				point.add(i);
 				point.add(j);
 				this.unknownGridPoints.add(point);
@@ -130,7 +128,7 @@ public class Explorer {
 								minDistance = distance;
 							}
 						}
-						
+
 					}
 					// If both Explorer agents are alone
 					if (this.alone && nearestExplorer.alone) {
@@ -149,12 +147,12 @@ public class Explorer {
 				} else {
 					move();
 				}
-				
+
 			}
-			
+
 			// Keep track of how much time has passed
 			this.currentTimeStep++;
-			
+
 			//moveTowards(pointWithMostHumans);
 			//infect();
 		}
@@ -194,14 +192,19 @@ public class Explorer {
 			//System.out.println(this.unknownGridPoints.size() + " " + setToList.size());
 			int x = setToList.get(randomIndex).get(0);
 			int y = setToList.get(randomIndex).get(1);
-			if ((explorerX - x) < 0) {
-				grid.moveByVector(this, 1, Direction.EAST);
-			} else if ((explorerX - x) > 0) {
-				grid.moveByVector(this, 1, Direction.WEST);
-			} else if ((explorerY - y) < 0) {
-				grid.moveByVector(this, 1, Direction.NORTH);
-			} else if ((explorerY - y) > 0) {
-				grid.moveByVector(this, 1, Direction.SOUTH);
+			int randomNum = RandomHelper.nextIntFromTo(0, 1);
+			if (randomNum == 0) {
+				if ((explorerX - x) < 0) {
+					grid.moveByVector(this, 1, Direction.EAST);
+				} else if ((explorerX - x) > 0) {
+					grid.moveByVector(this, 1, Direction.WEST);
+				}
+			} else {
+				if ((explorerY - y) < 0) {
+					grid.moveByVector(this, 1, Direction.NORTH);
+				} else if ((explorerY - y) > 0) {
+					grid.moveByVector(this, 1, Direction.SOUTH);
+				}
 			}
 		}
 
@@ -220,14 +223,11 @@ public class Explorer {
 
 	public Set<List<Integer>> getPerceptionRegion() {
 		Set<List<Integer>> perceptionRegion = new HashSet<List<Integer>>();
-		List<Integer> point = new ArrayList<Integer>(2);
-		//MooreQuery<Object> mooreNeighborhood = new MooreQuery<Object>(this.grid, this, this.perceptionRadius, this.perceptionRadius);
 		GridCellNgh<Treasure> nghCreator = new GridCellNgh<Treasure>(this.grid, this.currentLocation,
 				Treasure.class, this.perceptionRadius, this.perceptionRadius);
 		List<GridCell<Treasure>> gridCells = nghCreator.getNeighborhood(false);
 		for (GridCell<Treasure> gc : gridCells) {
-//			point.set(0, gc.getPoint().getX());
-//			point.set(1, gc.getPoint().getY());
+			List<Integer> point = new ArrayList<Integer>(2);
 			point.add(gc.getPoint().getX());
 			point.add(gc.getPoint().getY());
 			perceptionRegion.add(point);
