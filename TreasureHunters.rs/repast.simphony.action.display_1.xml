@@ -14,15 +14,25 @@
   <editedStyles>
     <entry>
       <string>treasureHunters.Treasure</string>
-      <string>treasureHunters.Treasure.style_0.xml</string>
+      <string>treasureHunters.Treasure.style_1.xml</string>
     </entry>
     <entry>
       <string>treasureHunters.Explorer</string>
-      <string>treasureHunters.Explorer.style_0.xml</string>
+      <string>treasureHunters.Explorer.style_1.xml</string>
     </entry>
   </editedStyles>
-  <netStyles/>
-  <editedNetStyles/>
+  <netStyles>
+    <entry>
+      <string>team network</string>
+      <string>repast.simphony.visualization.editedStyle.EditedEdgeStyle2D</string>
+    </entry>
+  </netStyles>
+  <editedNetStyles>
+    <entry>
+      <string>team network</string>
+      <string>teamnetwork.style_0.xml</string>
+    </entry>
+  </editedNetStyles>
   <frequency>ON_MOVE</frequency>
   <schedParams>
     <start>1.0</start>
@@ -31,7 +41,7 @@
     <pType>LAST</pType>
     <duration>-1.0</duration>
     <frequency>REPEAT</frequency>
-    <hashCode>-2112350900</hashCode>
+    <hashCode>-1845004491</hashCode>
   </schedParams>
   <layoutClassName>foo.bar.baz</layoutClassName>
   <layoutProjection>grid</layoutProjection>
@@ -51,6 +61,11 @@
       <id>grid</id>
       <attributes/>
       <type>grid</type>
+    </repast.simphony.scenario.data.ProjectionData>
+    <repast.simphony.scenario.data.ProjectionData>
+      <id>team network</id>
+      <attributes/>
+      <type>network</type>
     </repast.simphony.scenario.data.ProjectionData>
   </projections>
   <visualizationProperties class="repast.simphony.visualization.UnitSizeLayoutProperties">
@@ -81,6 +96,13 @@
           </entry>
         </props>
       </repast.simphony.visualization.grid.GridProjectionDescriptor>
+    </entry>
+    <entry>
+      <string>team network</string>
+      <repast.simphony.visualization.engine.DefaultProjectionDescriptor>
+        <proj reference="../../../../projections/repast.simphony.scenario.data.ProjectionData[2]"/>
+        <props/>
+      </repast.simphony.visualization.engine.DefaultProjectionDescriptor>
     </entry>
   </projectionDescriptors>
   <props/>

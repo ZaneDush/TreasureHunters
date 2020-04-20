@@ -1,5 +1,8 @@
 package treasureHunters;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import repast.simphony.context.Context;
 import repast.simphony.context.space.continuous.ContinuousSpaceFactory;
 import repast.simphony.context.space.continuous.ContinuousSpaceFactoryFinder;
@@ -26,60 +29,93 @@ Object> {
 	public Context build(Context<Object> context) {
 		context.setId("TreasureHunters");
 
-//		NetworkBuilder<Object> netBuilder = new NetworkBuilder<Object>(
-//				"infection network", context, true);
-//		netBuilder.buildNetwork();
+		//		NetworkBuilder<Object> netBuilder = new NetworkBuilder<Object>(
+		//				"infection network", context, true);
+		//		netBuilder.buildNetwork();
 
-//		ContinuousSpaceFactory spaceFactory = ContinuousSpaceFactoryFinder
-//				.createContinuousSpaceFactory(null);
-//		ContinuousSpace<Object> space = spaceFactory.createContinuousSpace(
-//				"space", context, new RandomCartesianAdder<Object>(),
-//				new repast.simphony.space.continuous.WrapAroundBorders(), 50,
-//				50);
+		//		ContinuousSpaceFactory spaceFactory = ContinuousSpaceFactoryFinder
+		//				.createContinuousSpaceFactory(null);
+		//		ContinuousSpace<Object> space = spaceFactory.createContinuousSpace(
+		//				"space", context, new RandomCartesianAdder<Object>(),
+		//				new repast.simphony.space.continuous.WrapAroundBorders(), 50,
+		//				50);
 
-//		Parameters params = RunEnvironment.getInstance().getParameters();
-//		int areaDimensions = (Integer) params.getValue("area_dimensions");
+		NetworkBuilder<Object> netBuilder = new NetworkBuilder<Object>(
+				"team network", context, true);
+		netBuilder.buildNetwork();
+
+		//		Parameters params = RunEnvironment.getInstance().getParameters();
+		//		int areaDimensions = (Integer) params.getValue("area_dimensions");
 		int areaDimensions = 100;
 		GridFactory gridFactory = GridFactoryFinder.createGridFactory(null);
 		Grid<Object> grid = gridFactory.createGrid("grid", context,
 				new GridBuilderParameters<Object>(new WrapAroundBorders(),
 						new SimpleGridAdder<Object>(), true, areaDimensions, areaDimensions)); // true so that many agents may occupy the same location at a time
 
-//		int explorerCount = (Integer) params.getValue("explorer_count");
-//		int navigationMemory = (Integer) params.getValue("navigation_memory");
-//		int perceptionRadius = (Integer) params.getValue("perception_radius");
-//		int treasureCount = (Integer) params.getValue("treasure_count");
-//		int treasureValue = (Integer) params.getValue("treasure_value");
-//		int treasureDecayRate = (Integer) params.getValue("treasure_decay_rate");
+		//		int explorerCount = (Integer) params.getValue("explorer_count");
+		//		double navigationMemory = (Double) params.getValue("navigation_memory");
+		//		int perceptionRadius = (Integer) params.getValue("perception_radius");
+		//		int treasureCount = (Integer) params.getValue("treasure_count");
+		//		double treasureValue = (Double) params.getValue("treasure_value");
+		//		double treasureDecayRate = (Double) params.getValue("treasure_decay_rate");
+		//		int minDistance = (Integer) params.getValue("minimum_distance_from_treasure");
 		int explorerCount = 100;
-		int navigationMemory = 50;
+		double navigationMemory = .80;
 		int perceptionRadius = 3;
 		int treasureCount = 10;
-		int treasureValue = 1000;
-		int treasureDecayRate = 10;
+		double treasureValue = 1000;
+		double treasureDecayRate = .10;
 		
 		// Create Explorers
 		for (int i = 0; i < explorerCount; i++) {
 			context.add(new Explorer(grid, navigationMemory, perceptionRadius, treasureCount, treasureValue, treasureDecayRate));
 		}
-		
+
 		// Create treasures
 		for (int i = 0; i < treasureCount; i++) {
 			context.add(new Treasure(grid, treasureValue, treasureDecayRate));
 		}
-		
+
 		// Place all Explorers and treasures on the grid
 		for (Object obj : context) {
 			//NdPoint pt = space.getLocation(obj);
 			int x = RandomHelper.nextIntFromTo(0, areaDimensions - 1);
 			int y = RandomHelper.nextIntFromTo(0, areaDimensions - 1);
-			
 			grid.moveTo(obj, x, y);
 		}
-//		
-//		if (RunEnvironment.getInstance().isBatch()) {
-//			RunEnvironment.getInstance().endAt(20);
+//		List<List<Integer>> treasureLocations = new ArrayList<List<Integer>>();
+//		for (Object obj : context) {
+//			//NdPoint pt = space.getLocation(obj);
+//			if (obj instanceof Treasure) {
+//				List<Integer> treasurePoint = new ArrayList<Integer>();
+//				int x = RandomHelper.nextIntFromTo(0, areaDimensions - 1);
+//				int y = RandomHelper.nextIntFromTo(0, areaDimensions - 1);
+//				treasurePoint.add(x);
+//				treasurePoint.add(y);
+//				grid.moveTo(obj, x, y);
+//			}
 //		}
+//		for (Object obj : context) {
+//			//NdPoint pt = space.getLocation(obj);
+//			if (obj instanceof Explorer) {
+//				boolean inLoop = true;
+//				while (inLoop) {
+//					int x = RandomHelper.nextIntFromTo(0, areaDimensions - 1);
+//					int y = RandomHelper.nextIntFromTo(0, areaDimensions - 1);
+//					for (List<Integer> treasureLocation : treasureLocations) {
+//						if ((x - treasureLocation.get(0)) >= minDistance && (y - treasureLocation.get(1)) >= minDistance) {
+//							grid.moveTo(obj, x, y);
+//							inLoop = false;
+//						}
+//					}
+//				}
+//				
+//			}
+//		}
+		//		
+		//		if (RunEnvironment.getInstance().isBatch()) {
+		//			RunEnvironment.getInstance().endAt(20);
+		//		}
 
 		return context;
 

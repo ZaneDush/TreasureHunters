@@ -28,26 +28,27 @@ public class Explorer {
 	//private ContinuousSpace<Object> space;
 	private Grid<Object> grid;
 	//private boolean moved;
-	private int navigationMemory;
+	private double navigationMemory;
 	private int perceptionRadius;
 	private boolean uncoveredTreasure;
 	private boolean treasureFound;
 	private boolean alone;
 	private int areaSideLength;
 	private Explorer teamMember;
+	// unknownGridPoints holds all unknown locations
 	private Set<List<Integer>> unknownGridPoints;
 	// May need to be lists of GridCell instead of GridPoint
 	private Set<List<Integer>> workingMemory;
 	private Set<List<Integer>> permanentMemory = new HashSet<List<Integer>>();
 	private GridPoint currentLocation;
 	private GridPoint closestTreasurePoint;
-	private int currentTimeStep;
+	private int currentTimeStep = 0;
 	private int treasureCount;
-	private int treasureValue;
-	private int treasureDecayRate;
+	private double treasureValue;
+	private double treasureDecayRate;
+	private List<Integer> randomLocation;
 
-	public Explorer(/*ContinuousSpace<Object> space, */Grid<Object> grid, int navigationMemory, int perceptionRadius, int treasureCount, int treasureValue, int treasureDecayRate) {
-		//this.space = space;
+	public Explorer(Grid<Object> grid, double navigationMemory, int perceptionRadius, int treasureCount, double treasureValue, double treasureDecayRate) {
 		this.grid = grid;
 		this.navigationMemory = navigationMemory;
 		this.perceptionRadius = perceptionRadius;
@@ -137,8 +138,13 @@ public class Explorer {
 							//System.out.println("MADE IT");
 							move();
 						} else {
+							this.alone = false;
 							this.teamMember = nearestExplorer;
+							nearestExplorer.alone = false;
 							nearestExplorer.teamMember = this;
+							Context<Object> context = ContextUtils.getContext(this);
+							Network<Object> net = (Network < Object>) context.getProjection("team network");
+							net.addEdge(this, this.teamMember);
 						}
 					} else { // Else at least one of the Explorer agents is not alone
 						//System.out.println("MADE IT");
@@ -147,12 +153,14 @@ public class Explorer {
 				} else {
 					move();
 				}
-
 			}
 
 			// Keep track of how much time has passed
 			this.currentTimeStep++;
-
+			
+			// treasureValue decays over time
+			this.treasureValue = this.treasureValue - (this.treasureValue * treasureDecayRate);
+			
 			//moveTowards(pointWithMostHumans);
 			//infect();
 		}
@@ -183,15 +191,19 @@ public class Explorer {
 		} else {
 			// Move towards random unknown location
 			// Set difference: allGridPoints \ workingMemory, and allGridPoints \ permanentMemory in order to find all unseen grid points
-			// this.unknownGridPoints holds all unknown locations
 			this.unknownGridPoints.removeAll(this.workingMemory);
 			this.unknownGridPoints.removeAll(this.permanentMemory);
-			//int[][] allGridPointsArray = (int[][]) this.unknownGridPoints.toArray();
 			List<List<Integer>> setToList = new ArrayList<List<Integer>>(this.unknownGridPoints);
-			int randomIndex = RandomHelper.nextIntFromTo(0, setToList.size() - 1);
-			//System.out.println(this.unknownGridPoints.size() + " " + setToList.size());
-			int x = setToList.get(randomIndex).get(0);
-			int y = setToList.get(randomIndex).get(1);
+			if (this.randomLocation == null) {
+				int randomIndex = RandomHelper.nextIntFromTo(0, setToList.size() - 1);
+				this.randomLocation = setToList.get(randomIndex);
+			} else if (!this.unknownGridPoints.contains(this.randomLocation)) {
+				int randomIndex = RandomHelper.nextIntFromTo(0, setToList.size() - 1);
+				//System.out.println(this.unknownGridPoints.size() + " " + setToList.size());
+				this.randomLocation = setToList.get(randomIndex);
+			}
+			int x = this.randomLocation.get(0);
+			int y = this.randomLocation.get(1);
 			int randomNum = RandomHelper.nextIntFromTo(0, 1);
 			if (randomNum == 0) {
 				if ((explorerX - x) < 0) {
@@ -213,7 +225,7 @@ public class Explorer {
 		this.workingMemory.removeAll(newPerceptionRegion);
 
 		// Update this.permanentMemory to contain this.navigationMemory% of locations from this.workingMemory (Note: May need to make sure locations that are already in this.permanentMemory aren't being re-added
-		int numLocationsToAdd = (int) Math.ceil(((this.navigationMemory / 100) * this.workingMemory.size()));
+		int numLocationsToAdd = (int) Math.ceil((this.navigationMemory * this.workingMemory.size()));
 		List<List<Integer>> setToList = new ArrayList<List<Integer>>(this.workingMemory);
 		for (int i = 0; i < numLocationsToAdd; i++) {
 			int randomIndex = RandomHelper.nextIntFromTo(0, this.workingMemory.size());
@@ -232,6 +244,18 @@ public class Explorer {
 			point.add(gc.getPoint().getY());
 			perceptionRegion.add(point);
 		}
+		// Share perception regions between team members
+		if (this.alone == false) {
+			GridCellNgh<Treasure> nghC = new GridCellNgh<Treasure>(this.teamMember.grid, this.teamMember.currentLocation,
+					Treasure.class, this.teamMember.perceptionRadius, this.teamMember.perceptionRadius);
+			List<GridCell<Treasure>> gridC = nghC.getNeighborhood(false);
+			for (GridCell<Treasure> gc : gridC) {
+				List<Integer> point = new ArrayList<Integer>(2);
+				point.add(gc.getPoint().getX());
+				point.add(gc.getPoint().getY());
+				perceptionRegion.add(point);
+			}
+		}
 		return perceptionRegion;
 	}
 
@@ -244,6 +268,7 @@ public class Explorer {
 		double treasureValueAlone = timeToDiscoverTreasureAlone * thisExplorer.treasureDecayRate;
 		double treasureValueTeam = (timeToDiscoverTreasureTeam * thisExplorer.treasureDecayRate) / 2;
 		// If thisExplorer receives less when alone as compared to team, then want to team up
+		System.out.println(treasureValueAlone + " vs " + treasureValueTeam);
 		if (treasureValueAlone < treasureValueTeam) {
 			return true;
 		} else {
