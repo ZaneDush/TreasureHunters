@@ -1,0 +1,12 @@
+<repast.simphony.data2.engine.FileSinkDescriptor simphonyVersion="2.7.0">
+  <name>TreasureHunter Simulation Explorer Information</name>
+  <dataSet>Individual Explorer Information</dataSet>
+  <delimiter>,</delimiter>
+  <format>TABULAR</format>
+  <sourceIds class="linked-hash-set">
+    <string>FinalTimeTick</string>
+    <string>StartingDistanceFromFoundTreasure</string>
+  </sourceIds>
+  <fileName>ModelOutput2.txt</fileName>
+  <addTimeStamp>true</addTimeStamp>
+</repast.simphony.data2.engine.FileSinkDescriptor>

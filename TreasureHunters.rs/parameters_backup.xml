@@ -25,7 +25,7 @@
 									
 		/>
 				<parameter name="navigation_memory" displayName="Navigation Memory" type="double" 
-						defaultValue="0.1" 
+						defaultValue="0.5" 
 						isReadOnly="false" 
 						converter="repast.simphony.parameter.StringConverterFactory$DoubleConverter"
 									
@@ -43,7 +43,7 @@
 									
 		/>
 				<parameter name="treasure_decay_rate" displayName="Treasure Decay Rate" type="double" 
-						defaultValue="0.1" 
+						defaultValue="0.02" 
 						isReadOnly="false" 
 						converter="repast.simphony.parameter.StringConverterFactory$DoubleConverter"
 									

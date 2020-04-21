@@ -296,6 +296,7 @@ public class Explorer {
 			return false;
 		}
 	}
+	
 
 	public int getSearchedAreaSize() {
 		return this.permanentMemory.size() + getPerceptionRegion().size();
