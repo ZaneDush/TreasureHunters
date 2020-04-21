@@ -7,7 +7,7 @@
 									
 		/>
 				<parameter name="perception_radius" displayName="Perception Radius" type="int" 
-						defaultValue="3" 
+						defaultValue="6" 
 						isReadOnly="false" 
 						converter="repast.simphony.parameter.StringConverterFactory$IntConverter"
 									
@@ -19,7 +19,7 @@
 									
 		/>
 				<parameter name="area_dimensions" displayName="Square Area Dimensions" type="int" 
-						defaultValue="100" 
+						defaultValue="50" 
 						isReadOnly="false" 
 						converter="repast.simphony.parameter.StringConverterFactory$IntConverter"
 									

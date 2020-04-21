@@ -44,18 +44,11 @@ Object> {
 		int treasureCount = (Integer) params.getValue("treasure_count");
 		double treasureValue = (Double) params.getValue("treasure_value");
 		double treasureDecayRate = (Double) params.getValue("treasure_decay_rate");
-		//int minDistance = (Integer) params.getValue("minimum_distance_from_treasure");
-		//		int explorerCount = 100;
-		//		double navigationMemory = .80;
-		//		int perceptionRadius = 3;
-		//		int treasureCount = 10;
-		//		double treasureValue = 1000;
-		//		double treasureDecayRate = .10;
 		// Create Explorers
 		int count = 0;
 		for (int i = 0; i < explorerCount; i++) {
-			perceptionRadius = RandomHelper.nextIntFromTo(3, 6);
-			navigationMemory = RandomHelper.nextDoubleFromTo(.1, .5);
+			//perceptionRadius = RandomHelper.nextIntFromTo(3, 6);
+			//navigationMemory = RandomHelper.nextDoubleFromTo(.1, .5);
 			context.add(new Explorer(grid, navigationMemory, perceptionRadius, treasureCount, treasureValue, treasureDecayRate, count));
 			count++;
 		}

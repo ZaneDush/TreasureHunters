@@ -47,6 +47,7 @@ public class Explorer {
 	private boolean flag = false;
 	private int count;
 	private Context<Object> context;
+	private double finalUtility;
 
 	public Explorer(Grid<Object> grid, double navigationMemory, int perceptionRadius, int treasureCount, double treasureValue, double treasureDecayRate, int count) {
 		this.grid = grid;
@@ -70,11 +71,12 @@ public class Explorer {
 				this.unknownGridPoints.add(point);
 			}
 		}
-		
+
 	}
 
 	@ScheduledMethod(start = 1, interval = 1)
 	public void exploring() {
+		// Set the context
 		this.context = ContextUtils.getContext(this);
 		// See if this Explorer has uncovered a treasure
 		if (this.uncoveredTreasure == false) {
@@ -92,19 +94,21 @@ public class Explorer {
 			// If Explorer has found a treasure
 			double minDistance;
 			if (this.treasureFound) {
-				// Find the closest treasure to the Explorer
-				minDistance = Double.MAX_VALUE;
-				double distance = 0;
-				for (GridCell<Treasure> cell : gridCells) {
-					if (cell.size() > 0) {
-						distance = grid.getDistance(this.currentLocation, cell.getPoint());
-						if (distance < minDistance) {
-							this.closestTreasurePoint = cell.getPoint();
-							minDistance = distance;
+				if (this.closestTreasurePoint == null) {
+					// Find the closest treasure to the Explorer
+					minDistance = Double.MAX_VALUE;
+					double distance = 0;
+					for (GridCell<Treasure> cell : gridCells) {
+						if (cell.size() > 0) {
+							distance = grid.getDistance(this.currentLocation, cell.getPoint());
+							if (distance < minDistance) {
+								//System.out.println(distance);
+								this.closestTreasurePoint = cell.getPoint();
+								minDistance = distance;
+							}
 						}
 					}
 				}
-				// If Explorer is on the treasure
 				move();
 
 			} else {
@@ -120,7 +124,7 @@ public class Explorer {
 						if (cell.size() > 0) {
 							distance = this.grid.getDistance(this.currentLocation, cell.getPoint());
 							if (distance < minDistance && distance != 0.0) {
-								System.out.println(distance);
+								//System.out.println(distance);
 								for (Object obj : this.grid.getObjectsAt(cell.getPoint().getX(), cell.getPoint().getY())) {
 									if (obj instanceof Explorer) {
 										nearestExplorer = (Explorer) obj;
@@ -132,7 +136,7 @@ public class Explorer {
 
 					}
 					// If both Explorer agents are alone
-					if (this.alone && nearestExplorer.alone) {
+					if (nearestExplorer != null && this.alone && nearestExplorer.alone) {
 						// If both Explorer agents decide to not team up
 						if (!teamUp(this, nearestExplorer) && !teamUp(nearestExplorer, this)) {
 							move();
@@ -179,6 +183,12 @@ public class Explorer {
 			} else {
 				// At treasure location, so uncover the treasure
 				this.uncoveredTreasure = true;
+				this.finalUtility = this.treasureValue;
+				// Remove the Explorer agents fromt the context
+				if (!this.alone) {
+					this.teamMember.finalUtility = this.treasureValue;
+					this.context.remove(this.teamMember);
+				}
 				this.context.remove(this);
 			}
 		} else {
