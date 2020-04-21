@@ -52,8 +52,12 @@ Object> {
 		//		double treasureValue = 1000;
 		//		double treasureDecayRate = .10;
 		// Create Explorers
+		int count = 0;
 		for (int i = 0; i < explorerCount; i++) {
-			context.add(new Explorer(grid, navigationMemory, perceptionRadius, treasureCount, treasureValue, treasureDecayRate));
+			perceptionRadius = RandomHelper.nextIntFromTo(3, 6);
+			navigationMemory = RandomHelper.nextDoubleFromTo(.1, .5);
+			context.add(new Explorer(grid, navigationMemory, perceptionRadius, treasureCount, treasureValue, treasureDecayRate, count));
+			count++;
 		}
 		// Create treasures
 		for (int i = 0; i < treasureCount; i++) {

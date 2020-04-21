@@ -44,14 +44,18 @@ public class Explorer {
 	private double treasureValue;
 	private double treasureDecayRate;
 	private List<Integer> randomLocation;
+	private boolean flag = false;
+	private int count;
+	private Context<Object> context;
 
-	public Explorer(Grid<Object> grid, double navigationMemory, int perceptionRadius, int treasureCount, double treasureValue, double treasureDecayRate) {
+	public Explorer(Grid<Object> grid, double navigationMemory, int perceptionRadius, int treasureCount, double treasureValue, double treasureDecayRate, int count) {
 		this.grid = grid;
 		this.navigationMemory = navigationMemory;
 		this.perceptionRadius = perceptionRadius;
 		this.treasureCount = treasureCount;
 		this.treasureValue = treasureValue;
 		this.treasureDecayRate = treasureDecayRate;
+		this.count = count;
 		this.uncoveredTreasure = false;
 		this.treasureFound = false;
 		this.alone = true;
@@ -66,14 +70,16 @@ public class Explorer {
 				this.unknownGridPoints.add(point);
 			}
 		}
+		
 	}
 
 	@ScheduledMethod(start = 1, interval = 1)
 	public void exploring() {
+		this.context = ContextUtils.getContext(this);
 		// See if this Explorer has uncovered a treasure
 		if (this.uncoveredTreasure == false) {
 			// Get the current grid location of this Explorer
-			this.currentLocation = grid.getLocation(this);
+			this.currentLocation = this.grid.getLocation(this);
 			// Use the GridCellNgh class to create GridCells in order to find any treasures within the perceptionRadius
 			GridCellNgh<Treasure> nghCreator = new GridCellNgh<Treasure>(this.grid, this.currentLocation,
 					Treasure.class, this.perceptionRadius, this.perceptionRadius);
@@ -99,26 +105,28 @@ public class Explorer {
 					}
 				}
 				// If Explorer is on the treasure
-				if (minDistance == 0) {
-					this.uncoveredTreasure = true;
-				} else {
-					move();
-				}
+				move();
+
 			} else {
 				if (this.currentTimeStep != 0) {
 					// Find the nearest Explorer to this Explorer
-					GridCellNgh<Explorer> nghExplorers = new GridCellNgh<Explorer>(grid, currentLocation,
+					GridCellNgh<Explorer> nghExplorers = new GridCellNgh<Explorer>(this.grid, this.currentLocation,
 							Explorer.class, this.areaSideLength, this.areaSideLength);
-					List<GridCell<Explorer>> explorerGridCells = nghExplorers.getNeighborhood(true);
+					List<GridCell<Explorer>> explorerGridCells = nghExplorers.getNeighborhood(false);
 					Explorer nearestExplorer = null;
 					minDistance = Double.MAX_VALUE;
-					double distance = 0;
+					double distance;
 					for (GridCell<Explorer> cell : explorerGridCells) {
 						if (cell.size() > 0) {
-							distance = grid.getDistance(currentLocation, cell.getPoint());
-							if (distance < minDistance) {
-								nearestExplorer = cell.items().iterator().next();
-								minDistance = distance;
+							distance = this.grid.getDistance(this.currentLocation, cell.getPoint());
+							if (distance < minDistance && distance != 0.0) {
+								System.out.println(distance);
+								for (Object obj : this.grid.getObjectsAt(cell.getPoint().getX(), cell.getPoint().getY())) {
+									if (obj instanceof Explorer) {
+										nearestExplorer = (Explorer) obj;
+										minDistance = distance;
+									}
+								}
 							}
 						}
 
@@ -133,8 +141,8 @@ public class Explorer {
 							this.teamMember = nearestExplorer;
 							nearestExplorer.alone = false;
 							nearestExplorer.teamMember = this;
-							Context<Object> context = ContextUtils.getContext(this);
-							Network<Object> net = (Network < Object>) context.getProjection("team network");
+
+							Network<Object> net = (Network<Object>) this.context.getProjection("team network");
 							net.addEdge(this, this.teamMember);
 						}
 					} else {
@@ -171,6 +179,7 @@ public class Explorer {
 			} else {
 				// At treasure location, so uncover the treasure
 				this.uncoveredTreasure = true;
+				this.context.remove(this);
 			}
 		} else {
 			// Move towards random unknown location
@@ -257,10 +266,15 @@ public class Explorer {
 			treasureValueTeam = treasureValueTeam - (treasureValueTeam * thisExplorer.treasureDecayRate);
 		}
 		treasureValueTeam = treasureValueTeam / 2;
-		
+
 		// If thisExplorer receives less when alone as compared to team, then want to team up
-		System.out.println(treasureValueAlone + " vs " + treasureValueTeam);
+		if (this.flag) {
+			System.out.println("2 " + treasureValueAlone + " vs " + treasureValueTeam);
+			this.flag = false;
+		}
 		if (treasureValueAlone < treasureValueTeam) {
+			//System.out.println("1 " + treasureValueAlone + " vs " + treasureValueTeam + " ID = " + this.count + " OTHER ID = " + nearestExplorer.count);
+			this.flag = true;
 			return true;
 		} else {
 			return false;
