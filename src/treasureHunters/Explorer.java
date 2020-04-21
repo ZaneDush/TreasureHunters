@@ -8,6 +8,7 @@ import java.util.Set;
 
 import treasureHunters.Treasure;
 import repast.simphony.context.Context;
+import repast.simphony.engine.environment.RunEnvironment;
 import repast.simphony.engine.schedule.ScheduledMethod;
 import repast.simphony.query.space.grid.GridCell;
 import repast.simphony.query.space.grid.GridCellNgh;
@@ -164,6 +165,7 @@ public class Explorer {
 			this.currentTimeStep++;
 			// treasureValue decays over time
 			this.treasureValue = this.treasureValue - (this.treasureValue * treasureDecayRate);
+			endSimulation();
 		}
 	}
 
@@ -172,6 +174,7 @@ public class Explorer {
 		this.workingMemory = getPerceptionRegion();
 		int explorerX = this.currentLocation.getX();
 		int explorerY = this.currentLocation.getY();
+		// If treasure is found
 		if (this.treasureFound) {
 			// Move towards the treasure
 			int treasureX = this.closestTreasurePoint.getX();
@@ -199,20 +202,24 @@ public class Explorer {
 			}
 		} else {
 			// Move towards random unknown location
-			// Set difference: unknownnGridPoints \ workingMemory, and unknownGridPoints \ permanentMemory in order to find all unseen grid points
+			// Set difference: unknownGridPoints \ workingMemory, and unknownGridPoints \ permanentMemory in order to find all unseen grid points
 			this.unknownGridPoints.removeAll(this.workingMemory);
 			this.unknownGridPoints.removeAll(this.permanentMemory);
 			List<List<Integer>> setToList = new ArrayList<List<Integer>>(this.unknownGridPoints);
+			// Find a random unknown location for the Explorer to go to
+			// If a random location has not already been set, then set it
 			if (this.randomLocation == null) {
 				int randomIndex = RandomHelper.nextIntFromTo(0, setToList.size() - 1);
 				this.randomLocation = setToList.get(randomIndex);
 			} else if (!this.unknownGridPoints.contains(this.randomLocation)) {
+				// Otherwise, must determine whether the random location has been reached, if it has then set a new random location to move towards
 				int randomIndex = RandomHelper.nextIntFromTo(0, setToList.size() - 1);
 				this.randomLocation = setToList.get(randomIndex);
 			}
 			int x = this.randomLocation.get(0);
 			int y = this.randomLocation.get(1);
 			int randomNum = RandomHelper.nextIntFromTo(0, 1);
+			// Move randomly in the direction of the random unknown location
 			if (randomNum == 0) {
 				if ((explorerX - x) < 0) {
 					grid.moveByVector(this, 1, Direction.EAST);
@@ -227,10 +234,10 @@ public class Explorer {
 				}
 			}
 		}
-		// Update this.workingMemory
+		// Update this.workingMemory to contain the locations that were in the perception region before the move set-minus the locations that are in the perception region after the move
 		Set<List<Integer>> newPerceptionRegion = getPerceptionRegion();
 		this.workingMemory.removeAll(newPerceptionRegion);
-		// Update this.permanentMemory to contain this.navigationMemory% of locations from this.workingMemory (Note: May need to make sure locations that are already in this.permanentMemory aren't being re-added
+		// Update this.permanentMemory to contain this.navigationMemory% of locations from this.workingMemory
 		int numLocationsToAdd = (int) Math.ceil((this.navigationMemory * this.workingMemory.size()));
 		List<List<Integer>> setToList = new ArrayList<List<Integer>>(this.workingMemory);
 		for (int i = 0; i < numLocationsToAdd; i++) {
@@ -297,7 +304,6 @@ public class Explorer {
 		}
 	}
 	
-
 	public int getSearchedAreaSize() {
 		return this.permanentMemory.size() + getPerceptionRegion().size();
 	}
@@ -312,5 +318,23 @@ public class Explorer {
 	
 	public int getTeamedUp() {
 		return this.teamedUp;
+	}
+	
+	public void endSimulation() {
+//		GridCellNgh<Explorer> nghCreator = new GridCellNgh<Explorer>(this.grid, this.currentLocation,
+//				Explorer.class, this.areaSideLength, this.areaSideLength);
+//		List<GridCell<Explorer>> gridCells = nghCreator.getNeighborhood(false);
+//		for (GridCell<Treasure> gc : gridCells) {
+//			if (gc.size() > 0) {
+//				this.treasureFound = true;
+//			}
+//		}
+		for (Object obj : this.grid.getObjects()) {
+			if (obj instanceof Explorer) {
+				return;
+			}
+		}
+		RunEnvironment.getInstance().endRun();
+		return;
 	}
 }
