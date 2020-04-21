@@ -38,6 +38,7 @@ public class Explorer {
 	private Set<List<Integer>> workingMemory;
 	private Set<List<Integer>> permanentMemory = new HashSet<List<Integer>>();
 	private GridPoint currentLocation;
+	private GridPoint startingLocation;
 	private GridPoint closestTreasurePoint;
 	private int currentTimeStep = 0;
 	private int treasureCount;
@@ -48,6 +49,7 @@ public class Explorer {
 	private int count;
 	private Context<Object> context;
 	private double finalUtility;
+	private int finalTimeTick;
 
 	public Explorer(Grid<Object> grid, double navigationMemory, int perceptionRadius, int treasureCount, double treasureValue, double treasureDecayRate, int count) {
 		this.grid = grid;
@@ -71,6 +73,7 @@ public class Explorer {
 				this.unknownGridPoints.add(point);
 			}
 		}
+		this.startingLocation = this.grid.getLocation(this);
 
 	}
 
@@ -184,9 +187,11 @@ public class Explorer {
 				// At treasure location, so uncover the treasure
 				this.uncoveredTreasure = true;
 				this.finalUtility = this.treasureValue;
+				this.finalTimeTick = this.currentTimeStep;
 				// Remove the Explorer agents fromt the context
 				if (!this.alone) {
 					this.teamMember.finalUtility = this.treasureValue;
+					this.teamMember.finalTimeTick = this.teamMember.currentTimeStep;
 					this.context.remove(this.teamMember);
 				}
 				this.context.remove(this);
@@ -293,5 +298,13 @@ public class Explorer {
 
 	public int getSearchedAreaSize() {
 		return this.permanentMemory.size() + getPerceptionRegion().size();
+	}
+	
+	public double getStartingDistanceFromFoundTreasure() {
+		return this.grid.getDistance(this.startingLocation, this.closestTreasurePoint);
+	}
+	
+	public int getFinalTimeTick() {
+		return this.finalTimeTick;
 	}
 }

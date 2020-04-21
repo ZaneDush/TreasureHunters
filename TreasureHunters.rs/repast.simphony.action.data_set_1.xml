@@ -1,0 +1,39 @@
+<repast.simphony.data2.engine.DataSetDescriptor simphonyVersion="2.7.0">
+  <name>Individual Explorer Information</name>
+  <type>NON_AGGREGATE</type>
+  <sourceType>treasureHunters.Explorer</sourceType>
+  <inclTick>true</inclTick>
+  <inclBatchRun>false</inclBatchRun>
+  <inclRandomSeed>false</inclRandomSeed>
+  <scheduleParams>
+    <start>Infinity</start>
+    <interval>0.0</interval>
+    <priority>-Infinity</priority>
+    <pType>LAST</pType>
+    <duration>-1.0</duration>
+    <frequency>ONE_TIME</frequency>
+    <hashCode>990548540</hashCode>
+  </scheduleParams>
+  <atEnd>false</atEnd>
+  <methodDataSources class="linked-hash-map">
+    <entry>
+      <string>StartingDistanceFromFoundTreasure</string>
+      <repast.simphony.data2.engine.MethodDataSourceDefinition>
+        <id>StartingDistanceFromFoundTreasure</id>
+        <className>treasureHunters.Explorer</className>
+        <methodName>getStartingDistanceFromFoundTreasure</methodName>
+      </repast.simphony.data2.engine.MethodDataSourceDefinition>
+    </entry>
+    <entry>
+      <string>FinalTimeTick</string>
+      <repast.simphony.data2.engine.MethodDataSourceDefinition>
+        <id>FinalTimeTick</id>
+        <className>treasureHunters.Explorer</className>
+        <methodName>getFinalTimeTick</methodName>
+      </repast.simphony.data2.engine.MethodDataSourceDefinition>
+    </entry>
+  </methodDataSources>
+  <countSources class="linked-hash-map"/>
+  <customNADataSources class="linked-hash-map"/>
+  <customAggDataSources class="linked-hash-map"/>
+</repast.simphony.data2.engine.DataSetDescriptor>
