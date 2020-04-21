@@ -50,6 +50,7 @@ public class Explorer {
 	private Context<Object> context;
 	private double finalUtility;
 	private int finalTimeTick;
+	private int teamedUp = 0;
 
 	public Explorer(Grid<Object> grid, double navigationMemory, int perceptionRadius, int treasureCount, double treasureValue, double treasureDecayRate, int count) {
 		this.grid = grid;
@@ -146,9 +147,9 @@ public class Explorer {
 						} else {
 							this.alone = false;
 							this.teamMember = nearestExplorer;
+							this.teamedUp = 1;
 							nearestExplorer.alone = false;
 							nearestExplorer.teamMember = this;
-
 							Network<Object> net = (Network<Object>) this.context.getProjection("team network");
 							net.addEdge(this, this.teamMember);
 						}
@@ -306,5 +307,9 @@ public class Explorer {
 	
 	public int getFinalTimeTick() {
 		return this.finalTimeTick;
+	}
+	
+	public int getTeamedUp() {
+		return this.teamedUp;
 	}
 }
