@@ -52,6 +52,7 @@ public class Explorer {
 	private double finalUtility;
 	private int finalTimeTick;
 	private int teamedUp = 0;
+	private double startingDistanceFromFoundTreasure;
 
 	/**
 	 * Constructor for an Explorer agent.
@@ -75,7 +76,7 @@ public class Explorer {
 		this.treasureFound = false;
 		this.alone = true;
 		this.areaSideLength = this.grid.getDimensions().getWidth();
-		// Create a set filled with all x,y coordinate pairs in the grid
+		// Create a set filled with all x,y coordinate pairs in the grid (useful in determining the Explorer's memory)
 		this.unknownGridPoints = new HashSet<List<Integer>>();
 		for (int i = 0; i < this.areaSideLength; i++) {
 			for (int j = 0; j < this.areaSideLength; j++) {
@@ -85,8 +86,6 @@ public class Explorer {
 				this.unknownGridPoints.add(point);
 			}
 		}
-		this.startingLocation = this.grid.getLocation(this);
-
 	}
 
 	/**
@@ -94,6 +93,9 @@ public class Explorer {
 	 */
 	@ScheduledMethod(start = 1, interval = 1)
 	public void exploring() {
+		if (this.currentTimeStep == 0) {
+			this.startingLocation = this.grid.getLocation(this);
+		}
 		// Set the context
 		this.context = ContextUtils.getContext(this);
 		// See if this Explorer has uncovered a treasure
@@ -120,7 +122,6 @@ public class Explorer {
 						if (cell.size() > 0) {
 							distance = grid.getDistance(this.currentLocation, cell.getPoint());
 							if (distance < minDistance) {
-								//System.out.println(distance);
 								this.closestTreasurePoint = cell.getPoint();
 								minDistance = distance;
 							}
@@ -128,7 +129,6 @@ public class Explorer {
 					}
 				}
 				move();
-
 			} else {
 				if (this.currentTimeStep != 0) {
 					// Find the nearest Explorer to this Explorer
@@ -142,7 +142,6 @@ public class Explorer {
 						if (cell.size() > 0) {
 							distance = this.grid.getDistance(this.currentLocation, cell.getPoint());
 							if (distance < minDistance && distance != 0.0) {
-								//System.out.println(distance);
 								for (Object obj : this.grid.getObjectsAt(cell.getPoint().getX(), cell.getPoint().getY())) {
 									if (obj instanceof Explorer) {
 										nearestExplorer = (Explorer) obj;
@@ -164,6 +163,7 @@ public class Explorer {
 							this.teamedUp = 1;
 							nearestExplorer.alone = false;
 							nearestExplorer.teamMember = this;
+							// Link the team members in the display
 							Network<Object> net = (Network<Object>) this.context.getProjection("team network");
 							net.addEdge(this, this.teamMember);
 						}
@@ -176,8 +176,9 @@ public class Explorer {
 			}
 			// Keep track of how much time has passed
 			this.currentTimeStep++;
-			// treasureValue decays over time
+			// Explorer keeps track of the treasureValue decaying over time
 			this.treasureValue = this.treasureValue - (this.treasureValue * treasureDecayRate);
+			// End simulation if there are no Explorer agents left in the context
 			endSimulation();
 		}
 	}
@@ -208,10 +209,13 @@ public class Explorer {
 				this.uncoveredTreasure = true;
 				this.finalUtility = this.treasureValue;
 				this.finalTimeTick = this.currentTimeStep;
-				// Remove the Explorer agents fromt the context
+				this.startingDistanceFromFoundTreasure = this.grid.getDistance(this.startingLocation, this.closestTreasurePoint);
+				// Remove the Explorer agents from the context
 				if (!this.alone) {
 					this.teamMember.finalUtility = this.treasureValue;
 					this.teamMember.finalTimeTick = this.teamMember.currentTimeStep;
+					this.teamMember.closestTreasurePoint = this.closestTreasurePoint;
+					this.teamMember.startingDistanceFromFoundTreasure = this.grid.getDistance(this.teamMember.startingLocation, this.closestTreasurePoint);
 					this.context.remove(this.teamMember);
 				}
 				this.context.remove(this);
@@ -221,6 +225,7 @@ public class Explorer {
 			// Set difference: unknownGridPoints \ workingMemory, and unknownGridPoints \ permanentMemory in order to find all unseen grid points
 			this.unknownGridPoints.removeAll(this.workingMemory);
 			this.unknownGridPoints.removeAll(this.permanentMemory);
+			// Convert to list in order to get elements randomly
 			List<List<Integer>> setToList = new ArrayList<List<Integer>>(this.unknownGridPoints);
 			// Find a random unknown location for the Explorer to go to
 			// If a random location has not already been set, then set it
@@ -263,7 +268,7 @@ public class Explorer {
 	}
 
 	/**
-	 * Retrieves the locations in the Explorer's perception region (as determined by their perceptionRadius).
+	 * Retrieves the locations in the Explorer's Moore neighborhood taking into account their perceptionRadius.
 	 * @return Locations within Explorer's perception radius.
 	 */
 	public Set<List<Integer>> getPerceptionRegion() {
@@ -303,10 +308,9 @@ public class Explorer {
 		double aloneSpeed = (double) thisExplorer.getSearchedAreaSize() / thisExplorer.currentTimeStep;
 		int teamSearchedArea = nearestExplorer.getSearchedAreaSize() + thisExplorer.getSearchedAreaSize();
 		double teamSpeed = (double) teamSearchedArea / thisExplorer.currentTimeStep;
-		//System.out.println(aloneSpeed + " " + teamSpeed);
 		double timeToDiscoverTreasureAlone = (thisExplorer.unknownGridPoints.size() / aloneSpeed) / thisExplorer.treasureCount;
 		double timeToDiscoverTreasureTeam = (thisExplorer.unknownGridPoints.size() / teamSpeed) / thisExplorer.treasureCount;
-		//System.out.println(timeToDiscoverTreasureAlone + " vs " + timeToDiscoverTreasureTeam);
+		// Calculate the expected treasure values when alone and when as a team
 		double treasureValueAlone = this.treasureValue;
 		double treasureValueTeam = this.treasureValue;
 		for (int i = 0; i < timeToDiscoverTreasureAlone; i++) {
@@ -316,15 +320,8 @@ public class Explorer {
 			treasureValueTeam = treasureValueTeam - (treasureValueTeam * thisExplorer.treasureDecayRate);
 		}
 		treasureValueTeam = treasureValueTeam / 2;
-
 		// If thisExplorer receives less when alone as compared to team, then want to team up
-		if (this.flag) {
-			System.out.println("2 " + treasureValueAlone + " vs " + treasureValueTeam);
-			this.flag = false;
-		}
 		if (treasureValueAlone < treasureValueTeam) {
-			//System.out.println("1 " + treasureValueAlone + " vs " + treasureValueTeam + " ID = " + this.count + " OTHER ID = " + nearestExplorer.count);
-			this.flag = true;
 			return true;
 		} else {
 			return false;
@@ -344,7 +341,7 @@ public class Explorer {
 	 * @return
 	 */
 	public double getStartingDistanceFromFoundTreasure() {
-		return this.grid.getDistance(this.startingLocation, this.closestTreasurePoint);
+		return this.startingDistanceFromFoundTreasure;
 	}
 	
 	/**

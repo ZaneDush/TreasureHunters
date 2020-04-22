@@ -52,8 +52,6 @@ Object> {
 		// Create Explorers, assigning a unique "count" to each that serves as an ID (useful for debugging)
 		int count = 0;
 		for (int i = 0; i < explorerCount; i++) {
-			//perceptionRadius = RandomHelper.nextIntFromTo(3, 6);
-			//navigationMemory = RandomHelper.nextDoubleFromTo(.1, .5);
 			context.add(new Explorer(grid, navigationMemory, perceptionRadius, treasureCount, treasureValue, treasureDecayRate, count));
 			count++;
 		}
@@ -63,45 +61,10 @@ Object> {
 		}
 		// Place all Explorers and treasures on the grid at a random location
 		for (Object obj : context) {
-			//NdPoint pt = space.getLocation(obj);
 			int x = RandomHelper.nextIntFromTo(0, areaDimensions - 1);
 			int y = RandomHelper.nextIntFromTo(0, areaDimensions - 1);
 			grid.moveTo(obj, x, y);
 		}
-		//		List<List<Integer>> treasureLocations = new ArrayList<List<Integer>>();
-		//		for (Object obj : context) {
-		//			//NdPoint pt = space.getLocation(obj);
-		//			if (obj instanceof Treasure) {
-		//				List<Integer> treasurePoint = new ArrayList<Integer>();
-		//				int x = RandomHelper.nextIntFromTo(0, areaDimensions - 1);
-		//				int y = RandomHelper.nextIntFromTo(0, areaDimensions - 1);
-		//				treasurePoint.add(x);
-		//				treasurePoint.add(y);
-		//				grid.moveTo(obj, x, y);
-		//			}
-		//		}
-		//		for (Object obj : context) {
-		//			//NdPoint pt = space.getLocation(obj);
-		//			if (obj instanceof Explorer) {
-		//				boolean inLoop = true;
-		//				while (inLoop) {
-		//					int x = RandomHelper.nextIntFromTo(0, areaDimensions - 1);
-		//					int y = RandomHelper.nextIntFromTo(0, areaDimensions - 1);
-		//					for (List<Integer> treasureLocation : treasureLocations) {
-		//						if ((x - treasureLocation.get(0)) >= minDistance && (y - treasureLocation.get(1)) >= minDistance) {
-		//							grid.moveTo(obj, x, y);
-		//							inLoop = false;
-		//						}
-		//					}
-		//				}
-		//				
-		//			}
-		//		}
-		//		
-		//		if (RunEnvironment.getInstance().isBatch()) {
-		//			RunEnvironment.getInstance().endAt(20);
-		//		}
 		return context;
 	}
-
 }
