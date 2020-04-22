@@ -53,6 +53,16 @@ public class Explorer {
 	private int finalTimeTick;
 	private int teamedUp = 0;
 
+	/**
+	 * Constructor for an Explorer agent.
+	 * @param grid
+	 * @param navigationMemory
+	 * @param perceptionRadius
+	 * @param treasureCount
+	 * @param treasureValue
+	 * @param treasureDecayRate
+	 * @param count, represents the Explorer's identification number (used in debugging)
+	 */
 	public Explorer(Grid<Object> grid, double navigationMemory, int perceptionRadius, int treasureCount, double treasureValue, double treasureDecayRate, int count) {
 		this.grid = grid;
 		this.navigationMemory = navigationMemory;
@@ -79,6 +89,9 @@ public class Explorer {
 
 	}
 
+	/**
+	 * Main algorithm the determines how the Explorer behaves at every time step.
+	 */
 	@ScheduledMethod(start = 1, interval = 1)
 	public void exploring() {
 		// Set the context
@@ -169,6 +182,9 @@ public class Explorer {
 		}
 	}
 
+	/**
+	 * Moves the Explorer one unit in either the direction of a treasure (if they have found one), or in the direction of a random unseen location.
+	 */
 	public void move() {
 		// Initialize this.workingMemory and get the Explorer's current location's coordinates
 		this.workingMemory = getPerceptionRegion();
@@ -246,6 +262,10 @@ public class Explorer {
 		}
 	}
 
+	/**
+	 * Retrieves the locations in the Explorer's perception region (as determined by their perceptionRadius).
+	 * @return Locations within Explorer's perception radius.
+	 */
 	public Set<List<Integer>> getPerceptionRegion() {
 		Set<List<Integer>> perceptionRegion = new HashSet<List<Integer>>();
 		GridCellNgh<Treasure> nghCreator = new GridCellNgh<Treasure>(this.grid, this.currentLocation,
@@ -272,6 +292,13 @@ public class Explorer {
 		return perceptionRegion;
 	}
 
+	/**
+	 * Responsible for determining whether thisExplorer wants to team up with nearestExplorer by comparing its
+	 * expected utility given the case thisExplorer is alone and the case that thisExplorer teams up with nearestExplorer.
+	 * @param thisExplorer
+	 * @param nearestExplorer
+	 * @return true if thisExplorer wants to team up with nearestExplorer, false otherwise.
+	 */
 	public boolean teamUp(Explorer thisExplorer, Explorer nearestExplorer) {		
 		double aloneSpeed = (double) thisExplorer.getSearchedAreaSize() / thisExplorer.currentTimeStep;
 		int teamSearchedArea = nearestExplorer.getSearchedAreaSize() + thisExplorer.getSearchedAreaSize();
@@ -304,31 +331,42 @@ public class Explorer {
 		}
 	}
 	
+	/**
+	 * Used to get the size of this Explorer's searched area.
+	 * @return
+	 */
 	public int getSearchedAreaSize() {
 		return this.permanentMemory.size() + getPerceptionRegion().size();
 	}
 	
+	/**
+	 * Used to get the distance this Explorer was from the treasure they uncovered at the beginning (output file).
+	 * @return
+	 */
 	public double getStartingDistanceFromFoundTreasure() {
 		return this.grid.getDistance(this.startingLocation, this.closestTreasurePoint);
 	}
 	
+	/**
+	 * Used to get the amount of time it took for the Explorer to uncover the treasure (output file).
+	 * @return
+	 */
 	public int getFinalTimeTick() {
 		return this.finalTimeTick;
 	}
 	
+	/**
+	 * Used to get the number of teams formed (output file).
+	 * @return
+	 */
 	public int getTeamedUp() {
 		return this.teamedUp;
 	}
 	
+	/**
+	 * End the simulation if there are no more Explorers in the context.
+	 */
 	public void endSimulation() {
-//		GridCellNgh<Explorer> nghCreator = new GridCellNgh<Explorer>(this.grid, this.currentLocation,
-//				Explorer.class, this.areaSideLength, this.areaSideLength);
-//		List<GridCell<Explorer>> gridCells = nghCreator.getNeighborhood(false);
-//		for (GridCell<Treasure> gc : gridCells) {
-//			if (gc.size() > 0) {
-//				this.treasureFound = true;
-//			}
-//		}
 		for (Object obj : this.grid.getObjects()) {
 			if (obj instanceof Explorer) {
 				return;

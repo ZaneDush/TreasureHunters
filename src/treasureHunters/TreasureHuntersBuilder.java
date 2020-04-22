@@ -25,26 +25,31 @@ import repast.simphony.space.grid.WrapAroundBorders;
 public class TreasureHuntersBuilder implements ContextBuilder<
 Object> {
 
+	/**
+	 * Method responsible for building the TreasureHunters simulation context.
+	 */
 	@Override
 	public Context build(Context<Object> context) {
 		context.setId("TreasureHunters");
+		// Create the projection network to show which Explorers have teamed up visually
 		NetworkBuilder<Object> netBuilder = new NetworkBuilder<Object>(
 				"team network", context, false);
 		netBuilder.buildNetwork();
+		// Retrieve the parameters that are set in the GUI
 		Parameters params = RunEnvironment.getInstance().getParameters();
 		int areaDimensions = (Integer) params.getValue("area_dimensions");
-		//		int areaDimensions = 100;
-		GridFactory gridFactory = GridFactoryFinder.createGridFactory(null);
-		Grid<Object> grid = gridFactory.createGrid("grid", context,
-				new GridBuilderParameters<Object>(new WrapAroundBorders(),
-						new SimpleGridAdder<Object>(), true, areaDimensions, areaDimensions)); // true so that many agents may occupy the same location at a time
 		int explorerCount = (Integer) params.getValue("explorer_count");
 		double navigationMemory = (Double) params.getValue("navigation_memory");
 		int perceptionRadius = (Integer) params.getValue("perception_radius");
 		int treasureCount = (Integer) params.getValue("treasure_count");
 		double treasureValue = (Double) params.getValue("treasure_value");
 		double treasureDecayRate = (Double) params.getValue("treasure_decay_rate");
-		// Create Explorers
+		// Create the grid projection on which the agents operate
+		GridFactory gridFactory = GridFactoryFinder.createGridFactory(null);
+		Grid<Object> grid = gridFactory.createGrid("grid", context,
+				new GridBuilderParameters<Object>(new StrictBorders(),
+						new SimpleGridAdder<Object>(), true, areaDimensions, areaDimensions)); // true so that many agents may occupy the same location at a time
+		// Create Explorers, assigning a unique "count" to each that serves as an ID (useful for debugging)
 		int count = 0;
 		for (int i = 0; i < explorerCount; i++) {
 			//perceptionRadius = RandomHelper.nextIntFromTo(3, 6);
@@ -56,7 +61,7 @@ Object> {
 		for (int i = 0; i < treasureCount; i++) {
 			context.add(new Treasure(grid, treasureValue, treasureDecayRate));
 		}
-		// Place all Explorers and treasures on the grid
+		// Place all Explorers and treasures on the grid at a random location
 		for (Object obj : context) {
 			//NdPoint pt = space.getLocation(obj);
 			int x = RandomHelper.nextIntFromTo(0, areaDimensions - 1);

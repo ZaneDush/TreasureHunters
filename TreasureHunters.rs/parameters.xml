@@ -37,13 +37,13 @@
 									
 		/>
 				<parameter name="treasure_value" displayName="Treasure Value" type="double" 
-						defaultValue="1000.0" 
+						defaultValue="10.0" 
 						isReadOnly="false" 
 						converter="repast.simphony.parameter.StringConverterFactory$DoubleConverter"
 									
 		/>
 				<parameter name="treasure_decay_rate" displayName="Treasure Decay Rate" type="double" 
-						defaultValue="0.03" 
+						defaultValue="0.5" 
 						isReadOnly="false" 
 						converter="repast.simphony.parameter.StringConverterFactory$DoubleConverter"
 									
