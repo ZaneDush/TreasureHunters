@@ -221,9 +221,7 @@ public class Explorer {
 					this.teamMember.finalTimeTick = this.teamMember.currentTimeStep;
 					this.teamMember.closestTreasurePoint = this.closestTreasurePoint;
 					this.teamMember.startingDistanceFromFoundTreasure = this.grid.getDistance(this.teamMember.startingLocation, this.closestTreasurePoint);
-					//this.context.remove(this.teamMember);
 				}
-				//this.context.remove(this);
 			}
 		} else {
 			// Move towards random unknown location
