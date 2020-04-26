@@ -7,7 +7,7 @@
 									
 		/>
 				<parameter name="perception_radius" displayName="Perception Radius" type="int" 
-						defaultValue="6" 
+						defaultValue="3" 
 						isReadOnly="false" 
 						converter="repast.simphony.parameter.StringConverterFactory$IntConverter"
 									
@@ -19,13 +19,13 @@
 									
 		/>
 				<parameter name="area_dimensions" displayName="Square Area Dimensions" type="int" 
-						defaultValue="50" 
+						defaultValue="40" 
 						isReadOnly="false" 
 						converter="repast.simphony.parameter.StringConverterFactory$IntConverter"
 									
 		/>
 				<parameter name="navigation_memory" displayName="Navigation Memory" type="double" 
-						defaultValue="0.5" 
+						defaultValue="0.1" 
 						isReadOnly="false" 
 						converter="repast.simphony.parameter.StringConverterFactory$DoubleConverter"
 									
@@ -43,7 +43,7 @@
 									
 		/>
 				<parameter name="treasure_decay_rate" displayName="Treasure Decay Rate" type="double" 
-						defaultValue="0.03" 
+						defaultValue="0.01" 
 						isReadOnly="false" 
 						converter="repast.simphony.parameter.StringConverterFactory$DoubleConverter"
 									

@@ -46,7 +46,7 @@ public class Explorer {
 	private double treasureValue;
 	private double treasureDecayRate;
 	private List<Integer> randomLocation;
-	private boolean flag = false;
+	//private boolean flag = false;
 	private int count;
 	private Context<Object> context;
 	private double finalUtility;
@@ -89,7 +89,7 @@ public class Explorer {
 	}
 
 	/**
-	 * Main algorithm the determines how the Explorer behaves at every time step.
+	 * Main algorithm that determines how the Explorer behaves at every time step.
 	 */
 	@ScheduledMethod(start = 1, interval = 1)
 	public void exploring() {
@@ -127,6 +127,11 @@ public class Explorer {
 							}
 						}
 					}
+					// If Explorer has a team member, let team member know that Explorer has found a treasure and where it is
+					if (!this.alone) {
+						this.teamMember.treasureFound = true;
+						this.teamMember.closestTreasurePoint = this.closestTreasurePoint;
+					}
 				}
 				move();
 			} else {
@@ -143,7 +148,7 @@ public class Explorer {
 							distance = this.grid.getDistance(this.currentLocation, cell.getPoint());
 							if (distance < minDistance && distance != 0.0) {
 								for (Object obj : this.grid.getObjectsAt(cell.getPoint().getX(), cell.getPoint().getY())) {
-									if (obj instanceof Explorer) {
+									if (obj instanceof Explorer && !((Explorer) obj).uncoveredTreasure) {
 										nearestExplorer = (Explorer) obj;
 										minDistance = distance;
 									}
@@ -216,9 +221,9 @@ public class Explorer {
 					this.teamMember.finalTimeTick = this.teamMember.currentTimeStep;
 					this.teamMember.closestTreasurePoint = this.closestTreasurePoint;
 					this.teamMember.startingDistanceFromFoundTreasure = this.grid.getDistance(this.teamMember.startingLocation, this.closestTreasurePoint);
-					this.context.remove(this.teamMember);
+					//this.context.remove(this.teamMember);
 				}
-				this.context.remove(this);
+				//this.context.remove(this);
 			}
 		} else {
 			// Move towards random unknown location
@@ -361,12 +366,14 @@ public class Explorer {
 	}
 	
 	/**
-	 * End the simulation if there are no more Explorers in the context.
+	 * End the simulation if all Explorers have found a treasure.
 	 */
 	public void endSimulation() {
 		for (Object obj : this.grid.getObjects()) {
 			if (obj instanceof Explorer) {
-				return;
+				if (((Explorer) obj).uncoveredTreasure == false) {
+					return;
+				}
 			}
 		}
 		RunEnvironment.getInstance().endRun();

@@ -11,17 +11,26 @@
     <pType>LAST</pType>
     <duration>-1.0</duration>
     <frequency>REPEAT</frequency>
-    <hashCode>-59582880</hashCode>
+    <hashCode>350923519</hashCode>
   </scheduleParams>
-  <atEnd>true</atEnd>
+  <atEnd>false</atEnd>
   <methodDataSources class="linked-hash-map">
     <entry>
-      <string>Number of Teams Formed</string>
+      <string>Number of teams formed</string>
       <repast.simphony.data2.engine.MethodDataSourceDefinition>
-        <id>Number of Teams Formed</id>
+        <id>Number of teams formed</id>
         <className>treasureHunters.Explorer</className>
         <methodName>getTeamedUp</methodName>
         <aggType>SUM</aggType>
+      </repast.simphony.data2.engine.MethodDataSourceDefinition>
+    </entry>
+    <entry>
+      <string>A treasure&apos;s value</string>
+      <repast.simphony.data2.engine.MethodDataSourceDefinition>
+        <id>A treasure&apos;s value</id>
+        <className>treasureHunters.Treasure</className>
+        <methodName>getTreasureValue</methodName>
+        <aggType>MEAN</aggType>
       </repast.simphony.data2.engine.MethodDataSourceDefinition>
     </entry>
   </methodDataSources>

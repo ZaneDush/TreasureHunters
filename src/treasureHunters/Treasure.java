@@ -28,5 +28,13 @@ public class Treasure {
 	public void decayValue() {
 		this.treasureValue = this.treasureValue - (this.treasureValue * treasureDecayRate);
 	}
+	
+	/**
+	 * Retrieve the value for a treasure at the given time tick (output file)
+	 * @return
+	 */
+	public double getTreasureValue() {
+		return this.treasureValue;
+	}
 
 }

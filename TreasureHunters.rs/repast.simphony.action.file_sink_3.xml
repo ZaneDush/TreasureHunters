@@ -5,7 +5,8 @@
   <format>TABULAR</format>
   <sourceIds class="linked-hash-set">
     <string>tick</string>
-    <string>Number of Teams Formed</string>
+    <string>A treasure&apos;s value</string>
+    <string>Number of teams formed</string>
   </sourceIds>
   <fileName>ModelOutput.txt</fileName>
   <addTimeStamp>true</addTimeStamp>
