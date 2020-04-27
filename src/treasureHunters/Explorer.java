@@ -46,12 +46,14 @@ public class Explorer {
 	private double treasureValue;
 	private double treasureDecayRate;
 	private List<Integer> randomLocation;
-	//private boolean flag = false;
 	private int count;
 	private Context<Object> context;
 	private double finalUtility;
 	private int finalTimeTick;
+	// Only one of the two who have teamed up will set teamedUp to 1 (for reporting in output file)
 	private int teamedUp = 0;
+	// Both Explorers in a team will set this to true (again, for reporting in output file)
+	private boolean inTeam = false;
 	private double startingDistanceFromFoundTreasure;
 
 	/**
@@ -212,12 +214,16 @@ public class Explorer {
 			} else {
 				// At treasure location, so uncover the treasure
 				this.uncoveredTreasure = true;
-				this.finalUtility = this.treasureValue;
-				this.finalTimeTick = this.currentTimeStep;
-				this.startingDistanceFromFoundTreasure = this.grid.getDistance(this.startingLocation, this.closestTreasurePoint);
-				// Remove the Explorer agents from the context
-				if (!this.alone) {
-					this.teamMember.finalUtility = this.treasureValue;
+				if (this.alone) {
+					this.finalUtility = this.treasureValue;
+					this.finalTimeTick = this.currentTimeStep;
+					this.startingDistanceFromFoundTreasure = this.grid.getDistance(this.startingLocation, this.closestTreasurePoint);
+				} else if (!this.teamMember.uncoveredTreasure) { // If team member hasn't already found the treasure, set all the final variables
+					this.finalUtility = this.treasureValue / 2;
+					this.finalTimeTick = this.currentTimeStep;
+					this.startingDistanceFromFoundTreasure = this.grid.getDistance(this.startingLocation, this.closestTreasurePoint);
+					// Set the final variables for the team member
+					this.teamMember.finalUtility = this.finalUtility;
 					this.teamMember.finalTimeTick = this.teamMember.currentTimeStep;
 					this.teamMember.closestTreasurePoint = this.closestTreasurePoint;
 					this.teamMember.startingDistanceFromFoundTreasure = this.grid.getDistance(this.teamMember.startingLocation, this.closestTreasurePoint);
@@ -330,7 +336,7 @@ public class Explorer {
 			return false;
 		}
 	}
-	
+
 	/**
 	 * Used to get the size of this Explorer's searched area.
 	 * @return
@@ -338,7 +344,7 @@ public class Explorer {
 	public int getSearchedAreaSize() {
 		return this.permanentMemory.size() + getPerceptionRegion().size();
 	}
-	
+
 	/**
 	 * Used to get the distance this Explorer was from the treasure they uncovered at the beginning (output file).
 	 * @return
@@ -346,7 +352,7 @@ public class Explorer {
 	public double getStartingDistanceFromFoundTreasure() {
 		return this.startingDistanceFromFoundTreasure;
 	}
-	
+
 	/**
 	 * Used to get the amount of time it took for the Explorer to uncover the treasure (output file).
 	 * @return
@@ -354,7 +360,15 @@ public class Explorer {
 	public int getFinalTimeTick() {
 		return this.finalTimeTick;
 	}
-	
+
+	/**
+	 * Used to retrieve the Explorer's final utility value (output file).
+	 * @return
+	 */
+	public double getFinalUtility() {
+		return this.finalUtility;
+	}
+
 	/**
 	 * Used to get the number of teams formed (output file).
 	 * @return
@@ -363,6 +377,14 @@ public class Explorer {
 		return this.teamedUp;
 	}
 	
+	/**
+	 * Used to denote which Explorers have formed teams (output file).
+	 * @return
+	 */
+	public boolean getInTeam() {
+		return this.inTeam;
+	}
+
 	/**
 	 * End the simulation if all Explorers have found a treasure.
 	 */

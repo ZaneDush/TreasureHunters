@@ -1,36 +1,51 @@
 <repast.simphony.data2.engine.DataSetDescriptor simphonyVersion="2.7.0">
-  <name>General Information</name>
-  <type>AGGREGATE</type>
+  <name>Explorer Information</name>
+  <type>NON_AGGREGATE</type>
+  <sourceType>treasureHunters.Explorer</sourceType>
   <inclTick>true</inclTick>
   <inclBatchRun>false</inclBatchRun>
   <inclRandomSeed>false</inclRandomSeed>
   <scheduleParams>
-    <start>1.0</start>
-    <interval>1.0</interval>
+    <start>Infinity</start>
+    <interval>0.0</interval>
     <priority>-Infinity</priority>
     <pType>LAST</pType>
     <duration>-1.0</duration>
-    <frequency>REPEAT</frequency>
-    <hashCode>350923519</hashCode>
+    <frequency>ONE_TIME</frequency>
+    <hashCode>-1855589869</hashCode>
   </scheduleParams>
   <atEnd>false</atEnd>
   <methodDataSources class="linked-hash-map">
     <entry>
-      <string>Number of teams formed</string>
+      <string>FinalTimeTick</string>
       <repast.simphony.data2.engine.MethodDataSourceDefinition>
-        <id>Number of teams formed</id>
+        <id>FinalTimeTick</id>
         <className>treasureHunters.Explorer</className>
-        <methodName>getTeamedUp</methodName>
-        <aggType>SUM</aggType>
+        <methodName>getFinalTimeTick</methodName>
       </repast.simphony.data2.engine.MethodDataSourceDefinition>
     </entry>
     <entry>
-      <string>A treasure&apos;s value</string>
+      <string>FinalUtility</string>
       <repast.simphony.data2.engine.MethodDataSourceDefinition>
-        <id>A treasure&apos;s value</id>
-        <className>treasureHunters.Treasure</className>
-        <methodName>getTreasureValue</methodName>
-        <aggType>MEAN</aggType>
+        <id>FinalUtility</id>
+        <className>treasureHunters.Explorer</className>
+        <methodName>getFinalUtility</methodName>
+      </repast.simphony.data2.engine.MethodDataSourceDefinition>
+    </entry>
+    <entry>
+      <string>InTeam</string>
+      <repast.simphony.data2.engine.MethodDataSourceDefinition>
+        <id>InTeam</id>
+        <className>treasureHunters.Explorer</className>
+        <methodName>getInTeam</methodName>
+      </repast.simphony.data2.engine.MethodDataSourceDefinition>
+    </entry>
+    <entry>
+      <string>StartingDistanceFromFoundTreasure</string>
+      <repast.simphony.data2.engine.MethodDataSourceDefinition>
+        <id>StartingDistanceFromFoundTreasure</id>
+        <className>treasureHunters.Explorer</className>
+        <methodName>getStartingDistanceFromFoundTreasure</methodName>
       </repast.simphony.data2.engine.MethodDataSourceDefinition>
     </entry>
   </methodDataSources>
