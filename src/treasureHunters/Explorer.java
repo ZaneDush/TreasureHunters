@@ -168,8 +168,10 @@ public class Explorer {
 							this.alone = false;
 							this.teamMember = nearestExplorer;
 							this.teamedUp = 1;
+							this.inTeam = true;
 							nearestExplorer.alone = false;
 							nearestExplorer.teamMember = this;
+							nearestExplorer.inTeam = true;
 							// Link the team members in the display
 							Network<Object> net = (Network<Object>) this.context.getProjection("team network");
 							net.addEdge(this, this.teamMember);
