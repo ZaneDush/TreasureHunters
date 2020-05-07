@@ -31,7 +31,7 @@
 									
 		/>
 				<parameter name="explorer_count" displayName="Explorer Count" type="int" 
-						defaultValue="200" 
+						defaultValue="300" 
 						isReadOnly="false" 
 						converter="repast.simphony.parameter.StringConverterFactory$IntConverter"
 									

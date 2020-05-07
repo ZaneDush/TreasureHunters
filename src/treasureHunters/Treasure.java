@@ -3,6 +3,11 @@ package treasureHunters;
 import repast.simphony.engine.schedule.ScheduledMethod;
 import repast.simphony.space.grid.Grid;
 
+/**
+ * The Treasure class represents a Treasure item within the TreasureHunters simulation. (The Treasure item is treated as an agent in the Repast Simphony toolkit).
+ * @author Zane Dush
+ *
+ */
 public class Treasure {
 
 	private Grid<Object> grid;

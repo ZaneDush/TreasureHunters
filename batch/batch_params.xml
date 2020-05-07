@@ -1,3 +1,1 @@
-<?xml version="1.0"?>
-<sweep runs="1">
-</sweep>
+<?xml version="1.0" ?><sweep runs="1"><parameter name="treasure_value" type="constant" constant_type="double" value="1000.0"></parameter><parameter name="treasure_decay_rate" type="constant" constant_type="double" value="0.01"></parameter><parameter name="perception_radius" type="list" value_type="int" values="3 4 5 6"><parameter name="treasure_count" type="list" value_type="int" values="10 30 50"><parameter name="area_dimensions" type="list" value_type="int" values="40 70 100"><parameter name="navigation_memory" type="list" value_type="double" values=".1 .3 .5"><parameter name="explorer_count" type="list" value_type="int" values="100 200 300"></parameter></parameter></parameter></parameter></parameter></sweep>

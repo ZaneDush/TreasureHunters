@@ -12,18 +12,18 @@ import repast.simphony.engine.environment.RunEnvironment;
 import repast.simphony.engine.schedule.ScheduledMethod;
 import repast.simphony.query.space.grid.GridCell;
 import repast.simphony.query.space.grid.GridCellNgh;
-import repast.simphony.query.space.grid.MooreQuery;
 import repast.simphony.random.RandomHelper;
 import repast.simphony.space.Direction;
-import repast.simphony.space.SpatialMath;
-import repast.simphony.space.continuous.ContinuousSpace;
-import repast.simphony.space.continuous.NdPoint;
 import repast.simphony.space.graph.Network;
 import repast.simphony.space.grid.Grid;
 import repast.simphony.space.grid.GridPoint;
 import repast.simphony.util.ContextUtils;
-import repast.simphony.util.SimUtilities;
 
+/**
+ * The Explorer class represents an Explorer agent within the TreasureHunters simulation.
+ * @author Zane Dush
+ *
+ */
 public class Explorer {
 
 	private Grid<Object> grid;
