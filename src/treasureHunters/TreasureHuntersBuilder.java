@@ -61,7 +61,8 @@ Object> {
 			int y = RandomHelper.nextIntFromTo(0, areaDimensions - 1);
 			grid.moveTo(obj, x, y);
 		}
-		RunEnvironment.getInstance().endAt(1000);
+		// Used for batch runs due to time contraints
+		//RunEnvironment.getInstance().endAt(1000);
 		return context;
 	}
 }

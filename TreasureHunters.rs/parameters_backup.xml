@@ -13,7 +13,7 @@
 									
 		/>
 				<parameter name="treasure_count" displayName="Treasure Count" type="int" 
-						defaultValue="10" 
+						defaultValue="50" 
 						isReadOnly="false" 
 						converter="repast.simphony.parameter.StringConverterFactory$IntConverter"
 									
@@ -31,7 +31,7 @@
 									
 		/>
 				<parameter name="explorer_count" displayName="Explorer Count" type="int" 
-						defaultValue="300" 
+						defaultValue="100" 
 						isReadOnly="false" 
 						converter="repast.simphony.parameter.StringConverterFactory$IntConverter"
 									
